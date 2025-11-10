@@ -50,6 +50,9 @@ public interface RecruitMapper {
     default List<ApprovalResDto> toApprovalDtoList(List<Approval> approvals) {
         return approvals.stream()
             .map(a -> ApprovalResDto.builder()
+                .memberName(a.getMember().getNickName())
+                .memberAge(a.getMember().getAge())
+                .memberGender(a.getMember().getGender())
                 .status(a.getStatus())
                 .build())
             .collect(Collectors.toList());

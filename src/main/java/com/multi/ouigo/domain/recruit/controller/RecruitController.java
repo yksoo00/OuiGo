@@ -1,6 +1,7 @@
 package com.multi.ouigo.domain.recruit.controller;
 
 import com.multi.ouigo.common.response.ResponseDto;
+import com.multi.ouigo.common.response.ResponseNoDateDto;
 import com.multi.ouigo.domain.recruit.dto.req.CreateRecruitReqDto;
 import com.multi.ouigo.domain.recruit.dto.req.UpdateRecruitReqDto;
 import com.multi.ouigo.domain.recruit.entity.Recruit;
@@ -86,6 +87,15 @@ public class RecruitController {
         return ResponseEntity.ok()
             .body(new ResponseDto(HttpStatus.NO_CONTENT, "모집 글 삭제 성공",
                 null));
+    }
+
+    @PostMapping("/participation/{recruitId}")
+    public ResponseEntity<ResponseNoDateDto> participateRecruit(HttpServletRequest request,
+        @PathVariable(name = "recruitId") Long recruitId) {
+        recruitService.participateRecruit(request, recruitId);
+
+        return ResponseEntity.ok()
+            .body(new ResponseNoDateDto(HttpStatus.NO_CONTENT, "참여 신청 되었습니다"));
     }
 
 }

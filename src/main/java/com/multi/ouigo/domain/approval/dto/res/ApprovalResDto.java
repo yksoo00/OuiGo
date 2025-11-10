@@ -12,5 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ApprovalResDto {
 
+    private String memberName;
+    private int memberAge;
+    private String memberGender;
     private ApprovalStatus status;
 }
