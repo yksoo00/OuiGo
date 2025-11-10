@@ -2,7 +2,7 @@ package com.multi.ouigo.domain.tourist.mapper;
 import com.multi.ouigo.domain.tourist.dto.req.TouristSpotReqDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotAllResDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotResDto;
-import com.multi.ouigo.domain.tourist.entity.TouristSpotEntity;
+import com.multi.ouigo.domain.tourist.entity.TouristSpot;
 import org.mapstruct.Mapper;
 
 
@@ -10,10 +10,10 @@ import org.mapstruct.Mapper;
 public interface TouristSpotMapper {
 
     // Entity -> ResDto 바로 변환
-    TouristSpotResDto toResDto(TouristSpotEntity entity);
+    TouristSpotResDto toResDto(TouristSpot entity);
 
     // Entity -> AllResDto
-    TouristSpotAllResDto toAllResDto(TouristSpotEntity entity);
+    TouristSpotAllResDto toAllResDto(TouristSpot entity);
 
-    TouristSpotEntity toEntity(TouristSpotReqDto touristSpotReqDto);
+    TouristSpot toEntity(TouristSpotReqDto touristSpotReqDto);
 }
