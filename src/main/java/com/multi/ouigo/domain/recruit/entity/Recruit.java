@@ -5,6 +5,7 @@ import com.multi.ouigo.common.entitiy.BaseEntity;
 import com.multi.ouigo.domain.approval.entity.Approval;
 import com.multi.ouigo.domain.condition.entity.Condition;
 import com.multi.ouigo.domain.member.entity.Member;
+import com.multi.ouigo.domain.recruit.dto.req.UpdateRecruitReqDto;
 import com.multi.ouigo.domain.tourist.entity.TouristSpot;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -98,4 +99,11 @@ public class Recruit extends BaseEntity {
     }
 
 
+    public void updateRecruit(UpdateRecruitReqDto updateRecruitReqDto) {
+        this.title = updateRecruitReqDto.getRecruitTitle();
+        this.content = updateRecruitReqDto.getRecruitContent();
+        this.category = updateRecruitReqDto.getRecruitCategory();
+        this.startDate = updateRecruitReqDto.getStartDate();
+        this.endDate = updateRecruitReqDto.getEndDate();
+    }
 }

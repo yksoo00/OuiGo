@@ -2,11 +2,14 @@ package com.multi.ouigo.domain.recruit.service;
 
 import com.multi.ouigo.common.exception.custom.NotFindException;
 import com.multi.ouigo.common.jwt.provider.TokenProvider;
+import com.multi.ouigo.domain.approval.repository.ApprovalRepository;
 import com.multi.ouigo.domain.condition.entity.Condition;
+import com.multi.ouigo.domain.condition.mapper.ConditionRepository;
 import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.repository.MemRepository;
 import com.multi.ouigo.domain.member.repository.MemberRepository;
 import com.multi.ouigo.domain.recruit.dto.req.CreateRecruitReqDto;
+import com.multi.ouigo.domain.recruit.dto.req.UpdateRecruitReqDto;
 import com.multi.ouigo.domain.recruit.dto.res.RecruitListResDto;
 import com.multi.ouigo.domain.recruit.dto.res.RecruitResDto;
 import com.multi.ouigo.domain.recruit.entity.Recruit;
@@ -42,6 +45,10 @@ public class RecruitService {
 
     private final MemRepository memRepository;
 
+    private final ConditionRepository conditionRepository;
+
+    private final ApprovalRepository approvalRepository;
+
     @Transactional
     public Recruit createRecruit(HttpServletRequest request,
         CreateRecruitReqDto createRecruitReqDto) {
@@ -59,18 +66,6 @@ public class RecruitService {
         addConditions(recruit, createRecruitReqDto.getAgeCodes());
         return recruitRepository.save(recruit);
 
-    }
-
-    private void addConditions(Recruit recruit, List<? extends Enum<?>> codes) {
-        if (codes == null) {
-            return;
-        }
-        for (Enum<?> code : codes) {
-            Condition condition = Condition.builder()
-                .code(code.name())
-                .build();
-            recruit.addCondition(condition);
-        }
     }
 
     public Page<RecruitListResDto> findAllRecruit(HttpServletRequest request, Pageable pageable,
@@ -116,7 +111,46 @@ public class RecruitService {
         Member recruitMember = memRepository.findByNo(recruit.getMember().getNo())
             .orElseThrow(() -> new NotFindException("여행장을 찾을 수 없습니다"));
         
-        // 4. Mapper 사용하여 DTO 변환
         return recruitMapper.toResDto(recruit);
+    }
+
+    @Transactional
+    public Long updateRecruit(HttpServletRequest request, Long recruitId,
+        UpdateRecruitReqDto updateRecruitReqDto) {
+        String memberId = tokenProvider.extractMemberId(request);
+
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
+
+        Recruit recruit = recruitRepository.findById(recruitId)
+            .orElseThrow(() -> new NotFindException("모집 글을 찾을 수 없습니다"));
+
+        TouristSpot touristSpot = touristSpotRepository.findById(
+                updateRecruitReqDto.getTouristSpotId())
+            .orElseThrow(() -> new NotFindException("관광지를 찾을 수 없습니다"));
+
+        recruit.setTouristSpot(touristSpot);
+
+        recruit.updateRecruit(updateRecruitReqDto);
+
+        recruit.getConditions().clear();
+
+        addConditions(recruit, updateRecruitReqDto.getGenderCodes());
+
+        addConditions(recruit, updateRecruitReqDto.getAgeCodes());
+
+        return recruit.getId();
+    }
+
+    private void addConditions(Recruit recruit, List<? extends Enum<?>> codes) {
+        if (codes == null) {
+            return;
+        }
+        for (Enum<?> code : codes) {
+            Condition condition = Condition.builder()
+                .code(code.name())
+                .build();
+            recruit.addCondition(condition);
+        }
     }
 }

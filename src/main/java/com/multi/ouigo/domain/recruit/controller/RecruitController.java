@@ -2,6 +2,7 @@ package com.multi.ouigo.domain.recruit.controller;
 
 import com.multi.ouigo.common.response.ResponseDto;
 import com.multi.ouigo.domain.recruit.dto.req.CreateRecruitReqDto;
+import com.multi.ouigo.domain.recruit.dto.req.UpdateRecruitReqDto;
 import com.multi.ouigo.domain.recruit.entity.Recruit;
 import com.multi.ouigo.domain.recruit.service.RecruitService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,7 +53,7 @@ public class RecruitController {
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return ResponseEntity.ok()
-            .body(new ResponseDto(HttpStatus.CREATED, "모집 전체 조회 성공",
+            .body(new ResponseDto(HttpStatus.OK, "모집 전체 조회 성공",
                 recruitService.findAllRecruit(request, pageable,
                     category,
                     startDate, endDate)));
@@ -63,8 +65,17 @@ public class RecruitController {
     public ResponseEntity<ResponseDto> findRecruit(HttpServletRequest request,
         @PathVariable(name = "recruitId") Long recruitId) {
         return ResponseEntity.ok()
-            .body(new ResponseDto(HttpStatus.CREATED, "모집 전체 조회 성공",
+            .body(new ResponseDto(HttpStatus.OK, "모집 상세 보기 성공",
                 recruitService.findRecruit(request, recruitId)));
+    }
+
+    @PutMapping("/{recruitId}")
+    public ResponseEntity<ResponseDto> updateRecruit(HttpServletRequest request,
+        @PathVariable(name = "recruitId") Long recruitId,
+        @RequestBody UpdateRecruitReqDto dto) {
+        return ResponseEntity.ok()
+            .body(new ResponseDto(HttpStatus.OK, "모집 글 수정 성공",
+                recruitService.updateRecruit(request, recruitId, dto)));
     }
 
 }
