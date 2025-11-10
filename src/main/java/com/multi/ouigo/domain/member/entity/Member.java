@@ -29,17 +29,18 @@ public class Member extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;  // 이메일
 
+    @Setter
     @Column(name = "role", nullable = false)
     private String role;  // 사용자/관리자 권한
 
     @Column(name = "nick_nm", nullable = false, unique = true, length = 6)
-    private String nickname;  // 닉네임(중복불가, 최대 6글자)
+    private String nickName;  // 닉네임(중복불가, 최대 6글자)
 
     @Column(name = "prof_img", length = 500)
     private String profileImage;  // 프로필 이미지 URL
 
     @Column(name = "age")
-    private Integer age;  // 나이
+    private int age;  // 나이
 
     @Column(name = "gndr", length = 1)
     private String gender;  // 성별
@@ -48,8 +49,8 @@ public class Member extends BaseEntity {
     private String introduction; // 자기소개
 
 
-    public void update(String nickname, String email, String profileImage, String introduction) {
-        this.nickname = nickname;
+    public void update(String nickName, String email, String profileImage, String introduction) {
+        this.nickName = nickName;
         this.email = email;
         this.profileImage = profileImage;
         this.introduction = introduction;
