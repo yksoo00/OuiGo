@@ -44,9 +44,9 @@ public class TouristSpotController {
     }
 
     @PostMapping("/tourist-spots")
-    public ResponseEntity<ResponseDto> regist(@ModelAttribute TouristSpotReqDto touristSpotReqDto){
+    public ResponseEntity<ResponseDto> save(@ModelAttribute TouristSpotReqDto touristSpotReqDto){
         System.out.println("touristSpotReqDto : "+touristSpotReqDto.getTitle());
-        Long id = touristSpotService.regist(touristSpotReqDto);
+        Long id = touristSpotService.save(touristSpotReqDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(HttpStatus.CREATED,"관광지 등록 성공",id));
 

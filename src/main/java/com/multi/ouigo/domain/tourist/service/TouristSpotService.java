@@ -13,7 +13,7 @@ public interface TouristSpotService {
 
     TouristSpotAllResDto getTouristSpotById(Long id);
 
-    Long regist(TouristSpotReqDto touristSpotReqDto);
+    Long save(TouristSpotReqDto touristSpotReqDto);
 
     void updateById(Long id,TouristSpotReqDto touristSpotReqDto);
 }

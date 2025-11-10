@@ -33,8 +33,9 @@ public class TouristSpotServiceImpl implements TouristSpotService {
         return touristSpotMapper.toAllResDto(touristSpot);
     }
 
+    @Transactional
     @Override
-    public Long regist(TouristSpotReqDto touristSpotReqDto) {
+    public Long save(TouristSpotReqDto touristSpotReqDto) {
 
         TouristSpotEntity touristSpotEntity = touristSpotMapper.toEntity(touristSpotReqDto);
         return touristSpotRepository.save(touristSpotEntity).getId();
