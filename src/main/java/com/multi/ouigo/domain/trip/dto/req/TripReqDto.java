@@ -19,10 +19,10 @@ public class TripReqDto {
     @NotBlank(message = "여행 관광지는 필수 입력 사항입니다.")
     private String title;  // 여행 관광지
 
-    @NotBlank(message = "시작일은 필수 입력 사항입니다.")
+    @NotNull(message = "시작일은 필수 입력 사항입니다.")
     private LocalDate startDate;
 
-    @NotBlank(message = "종료일은 필수 입력 사항입니다.")
+    @NotNull(message = "종료일은 필수 입력 사항입니다.")
     private LocalDate endDate;
 
     private int budget;
