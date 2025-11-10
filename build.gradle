@@ -46,9 +46,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:1.6.3"
     annotationProcessor "org.mapstruct:mapstruct-processor:1.6.3"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:1.6.3"
-//  https://github.com/mapstruct/mapstruct-examples/blob/main/mapstruct-on-gradle/build.gradle
-
-    // Redis
+    
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
