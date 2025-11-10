@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TouristSpotServiceImpl implements TouristSpotService {
@@ -37,6 +39,15 @@ public class TouristSpotServiceImpl implements TouristSpotService {
         }
         Page<TouristSpot> page = touristSpotRepository.findAll(spec, pageable);
         return page.map(touristSpotMapper::toResDto);
+    }
+
+    @Override
+    public List<TouristSpotResDto> getTouristSpots() {
+        List<TouristSpot> touristSpots = touristSpotRepository.findAll();
+
+        return touristSpots.stream()
+                .map(touristSpotMapper::toResDto)
+                .toList();
     }
 
     @Override

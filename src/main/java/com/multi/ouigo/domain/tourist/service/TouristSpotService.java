@@ -8,10 +8,12 @@ import com.multi.ouigo.domain.tourist.dto.res.TouristSpotResDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface TouristSpotService {
 
     Page<TouristSpotResDto> getTouristSpots(String keyword, Pageable pageable);
-
+    List<TouristSpotResDto> getTouristSpots();
     TouristSpotAllResDto getTouristSpotById(Long id);
 
     Long save(TouristSpotReqDto touristSpotReqDto);
