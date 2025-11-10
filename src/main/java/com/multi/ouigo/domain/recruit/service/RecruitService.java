@@ -6,13 +6,18 @@ import com.multi.ouigo.domain.condition.entity.Condition;
 import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.repository.MemberRepository;
 import com.multi.ouigo.domain.recruit.dto.req.CreateRecruitReqDto;
+import com.multi.ouigo.domain.recruit.dto.res.RecruitListResDto;
 import com.multi.ouigo.domain.recruit.entity.Recruit;
 import com.multi.ouigo.domain.recruit.mapper.RecruitMapper;
 import com.multi.ouigo.domain.recruit.repository.RecruitRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,5 +60,34 @@ public class RecruitService {
                 .build();
             recruit.addCondition(condition);
         }
+    }
+
+    public Page<RecruitListResDto> findAllRecruit(HttpServletRequest request, Pageable pageable,
+        String category, LocalDate startDate, LocalDate endDate) {
+        String memberId = tokenProvider.extractMemberId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
+
+        Specification<Recruit> spec = (root, query, cb) -> cb.conjunction();
+
+        if (category != null && !category.isEmpty()) {
+            spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("category"), category));
+        }
+
+        if (startDate != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.greaterThanOrEqualTo(root.get("startDate"), startDate));
+        }
+
+        if (endDate != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.lessThanOrEqualTo(root.get("endDate"), endDate));
+        }
+
+        Page<Recruit> pageResult = recruitRepository.findAll(spec, pageable);
+
+        return pageResult.map(recruitMapper::toDto);
+
     }
 }
