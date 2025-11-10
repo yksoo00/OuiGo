@@ -1,5 +1,6 @@
 package com.multi.ouigo.domain.recruit.service;
 
+import com.multi.ouigo.common.exception.custom.NotAuthorizedException;
 import com.multi.ouigo.common.exception.custom.NotFindException;
 import com.multi.ouigo.common.jwt.provider.TokenProvider;
 import com.multi.ouigo.domain.approval.repository.ApprovalRepository;
@@ -110,7 +111,7 @@ public class RecruitService {
 
         Member recruitMember = memRepository.findByNo(recruit.getMember().getNo())
             .orElseThrow(() -> new NotFindException("여행장을 찾을 수 없습니다"));
-        
+
         return recruitMapper.toResDto(recruit);
     }
 
@@ -152,5 +153,22 @@ public class RecruitService {
                 .build();
             recruit.addCondition(condition);
         }
+    }
+
+    @Transactional
+    public void deleteRecruit(HttpServletRequest request, Long recruitId) {
+        String memberId = tokenProvider.extractMemberId(request);
+
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
+
+        Recruit recruit = recruitRepository.findById(recruitId)
+            .orElseThrow(() -> new NotFindException("모집 글을 찾을 수 없습니다"));
+        if (!recruit.getMember().getNo().equals(member.getNo())) {
+            throw new NotAuthorizedException("본인 글만 삭제할 수 있습니다");
+        }
+        recruit.setDeleted(true);
+
+
     }
 }

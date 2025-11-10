@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,6 +77,15 @@ public class RecruitController {
         return ResponseEntity.ok()
             .body(new ResponseDto(HttpStatus.OK, "모집 글 수정 성공",
                 recruitService.updateRecruit(request, recruitId, dto)));
+    }
+
+    @DeleteMapping("/{recruitId}")
+    public ResponseEntity<ResponseDto> deleteRecruit(HttpServletRequest request,
+        @PathVariable(name = "recruitId") Long recruitId) {
+        recruitService.deleteRecruit(request, recruitId);
+        return ResponseEntity.ok()
+            .body(new ResponseDto(HttpStatus.NO_CONTENT, "모집 글 삭제 성공",
+                null));
     }
 
 }

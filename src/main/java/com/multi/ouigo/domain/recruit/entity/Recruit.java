@@ -26,6 +26,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Builder
 @Getter
@@ -33,6 +34,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "recruits")
+@Where(clause = "del_yn = 0")
 public class Recruit extends BaseEntity {
 
     @Id
