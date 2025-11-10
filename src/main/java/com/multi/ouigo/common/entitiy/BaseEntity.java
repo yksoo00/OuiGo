@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public abstract class BaseEntity {
+
     @CreatedDate
     @Column(name = "crt_dt", updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
