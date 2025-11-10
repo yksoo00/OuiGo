@@ -37,7 +37,7 @@ public class CreateRecruitReqDto {
 
     private List<AgeCode> ageCodes;
 
-    private int touristSpotId;
+    private Long touristSpotId;
 
 
 }

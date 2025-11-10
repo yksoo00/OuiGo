@@ -5,6 +5,7 @@ import com.multi.ouigo.common.entitiy.BaseEntity;
 import com.multi.ouigo.domain.approval.entity.Approval;
 import com.multi.ouigo.domain.condition.entity.Condition;
 import com.multi.ouigo.domain.member.entity.Member;
+import com.multi.ouigo.domain.tourist.entity.TouristSpot;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,8 +39,10 @@ public class Recruit extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column
-    private int touristSpotId;
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tourist_spot_id")
+    private TouristSpot touristSpot;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,17 +78,19 @@ public class Recruit extends BaseEntity {
     }
 
     public void addCondition(Condition condition) {
+        if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
+        }
         this.conditions.add(condition);
         condition.setRecruit(this);
     }
 
     @Builder
-    public Recruit(String title, String content, String category, int touristSpotId,
+    public Recruit(String title, String content, String category, Long touristSpotId,
         LocalDate startDate, LocalDate endDate) {
         this.title = title;
         this.content = content;
         this.category = category;
-        this.touristSpotId = touristSpotId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.approvals = new ArrayList<>();
