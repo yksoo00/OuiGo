@@ -57,4 +57,10 @@ public class TouristSpotController {
         touristSpotService.updateById(id,touristSpotReqDto);
         return ResponseEntity.ok().body(new ResponseDto(HttpStatus.OK,"관광지 수정 성공",id));
     }
+
+    @DeleteMapping("/tourist-spots/{id}")
+    public ResponseEntity<ResponseDto> deleteById(@PathVariable Long id){
+        touristSpotService.deleteById(id);
+        return ResponseEntity.ok().body(new ResponseDto(HttpStatus.OK,"관광지 삭제 성공",id));
+    }
 }

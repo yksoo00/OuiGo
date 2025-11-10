@@ -49,4 +49,9 @@ public class TouristSpotServiceImpl implements TouristSpotService {
 
         touristSpot.update(touristSpotReqDto);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        touristSpotRepository.deleteById(id);
+    }
 }
