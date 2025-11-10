@@ -14,9 +14,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public abstract class BaseEntity {
+
     @CreatedDate
     @Column(name = "crt_dt", updatable = false)
-    @JsonFormat( pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Column(name = "upd_dt")
@@ -24,7 +25,7 @@ public abstract class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Column(name = "del_yn", nullable = false)
+    @Column(name = "del_yn", nullable = false, columnDefinition = "TINYINT(1) default 0")
     private boolean isDeleted = false;
 
 
