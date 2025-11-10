@@ -2,6 +2,7 @@ package com.multi.ouigo.domain.tourist.controller;
 
 
 import com.multi.ouigo.common.response.ResponseDto;
+import com.multi.ouigo.domain.tourist.dto.req.TouristSpotReqDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotAllResDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotResDto;
 import com.multi.ouigo.domain.tourist.service.TouristSpotService;
@@ -41,4 +42,13 @@ public class TouristSpotController {
         return ResponseEntity.ok().body(new ResponseDto(HttpStatus.OK,"관광지 상세 조회 성공",touristSpot));
     }
 
+    @PostMapping("/tourist-spots")
+    public ResponseEntity<ResponseDto> regist(@ModelAttribute TouristSpotReqDto touristSpotReqDto){
+        System.out.println("touristSpotReqDto : "+touristSpotReqDto.getTitle());
+        Long id = touristSpotService.regist(touristSpotReqDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(HttpStatus.CREATED,"관광지 등록 성공",id));
+
+
+    }
 }

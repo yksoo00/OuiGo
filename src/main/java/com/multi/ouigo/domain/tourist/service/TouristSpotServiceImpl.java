@@ -1,5 +1,6 @@
 package com.multi.ouigo.domain.tourist.service;
 
+import com.multi.ouigo.domain.tourist.dto.req.TouristSpotReqDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotAllResDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotResDto;
 import com.multi.ouigo.domain.tourist.entity.TouristSpotEntity;
@@ -27,5 +28,12 @@ public class TouristSpotServiceImpl implements TouristSpotService {
     public TouristSpotAllResDto getTouristSpotById(Long id) {
         TouristSpotEntity touristSpot = touristSpotRepository.findById(id).orElseThrow(()->new IllegalArgumentException("조회할 관광지가 존재하지 않습니다."));
         return touristSpotMapper.toAllResDto(touristSpot);
+    }
+
+    @Override
+    public Long regist(TouristSpotReqDto touristSpotReqDto) {
+
+        TouristSpotEntity touristSpotEntity = touristSpotMapper.toEntity(touristSpotReqDto);
+        return touristSpotRepository.save(touristSpotEntity).getId();
     }
 }

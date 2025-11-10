@@ -1,6 +1,7 @@
 package com.multi.ouigo.domain.tourist.service;
 
 
+import com.multi.ouigo.domain.tourist.dto.req.TouristSpotReqDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotAllResDto;
 import com.multi.ouigo.domain.tourist.dto.res.TouristSpotResDto;
 
@@ -11,4 +12,6 @@ public interface TouristSpotService {
     Page<TouristSpotResDto> getTouristSpots(Pageable pageable);
 
     TouristSpotAllResDto getTouristSpotById(Long id);
+
+    Long regist(TouristSpotReqDto touristSpotReqDto);
 }
