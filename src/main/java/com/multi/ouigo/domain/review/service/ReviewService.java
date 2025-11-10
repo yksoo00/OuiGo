@@ -29,8 +29,7 @@ public class ReviewService {
         Page<Review> reviews = reviewRepository.findByTouristIdWithPaging(touristId, pageable);
 
         return reviews.map(review -> {
-            ReviewResDTO reviewResDTO = reviewMapper.toResDto(review);
-            return reviewResDTO;
+            return reviewMapper.toResDto(review);
         });
     }
 
