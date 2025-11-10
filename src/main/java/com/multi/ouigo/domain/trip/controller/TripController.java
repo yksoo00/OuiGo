@@ -53,4 +53,20 @@ public class TripController {
                 ));
     }
 
+
+    // 여행 일정 수정
+    @PutMapping("/{tripId}")
+    public ResponseEntity<ResponseDto> updateTrip(
+            @PathVariable Long tripId,
+            @Valid @RequestBody TripReqDto tripReqDto) {
+
+        log.info("[TripController] 여행 일정 수정 - tripId: {}", tripId);
+
+        return ResponseEntity.ok()
+                .body(new ResponseDto(
+                        HttpStatus.OK,
+                        "여행 일정 수정 성공",
+                        tripService.updateTrip(tripId, tripReqDto)
+                ));
+    }
 }

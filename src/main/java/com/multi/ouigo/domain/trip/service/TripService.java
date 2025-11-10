@@ -8,6 +8,7 @@ import com.multi.ouigo.domain.trip.dto.res.TripResDto;
 import com.multi.ouigo.domain.trip.entity.Trip;
 import com.multi.ouigo.domain.trip.mapper.TripMapper;
 import com.multi.ouigo.domain.trip.repository.TripRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -97,6 +98,37 @@ public class TripService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+
+    // 여행 일정 수정
+    @Transactional
+    public TripResDto updateTrip(Long tripId, TripReqDto tripReqDto) {
+
+        log.info("여행 일정 수정 - tripId: {}", tripId);
+
+        // 일정 조회
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 여행 일정입니다."));
+
+        // 날짜 유효성 검증
+        if (tripReqDto.getEndDate().isBefore(tripReqDto.getStartDate())) {
+            throw new IllegalArgumentException("종료일은 시작일보다 이후여야 합니다.");
+        }
+
+        // 정보 수정
+        trip.update(
+                tripReqDto.getDestination(),
+                tripReqDto.getTitle(),
+                tripReqDto.getStartDate(),
+                tripReqDto.getEndDate(),
+                tripReqDto.getBudget(),
+                tripReqDto.getMemo()
+        );
+
+        log.info("여행 일정 수정 완료 - tripId: {}", tripId);
+
+        return tripMapper.toTripResDto(trip);
     }
 
 }
