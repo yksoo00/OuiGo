@@ -131,4 +131,21 @@ public class TripService {
         return tripMapper.toTripResDto(trip);
     }
 
+
+    // 여행 일정 삭제
+    @Transactional
+    public void deleteTrip(Long tripId) {
+
+        log.info("여행 일정 삭제 - tripId: {}", tripId);
+
+        // 일정 존재 확인
+        if (!tripRepository.existsById(tripId)) {
+            throw new IllegalArgumentException("존재하지 않는 여행 일정입니다.");
+        }
+
+        // 삭제
+        tripRepository.deleteById(tripId);
+
+        log.info("여행 일정 삭제 완료 - tripId: {}", tripId);
+    }
 }

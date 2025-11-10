@@ -69,4 +69,22 @@ public class TripController {
                         tripService.updateTrip(tripId, tripReqDto)
                 ));
     }
+
+
+    // 여행 일정 삭제
+    @DeleteMapping("/{tripId}")
+    public ResponseEntity<ResponseDto> deleteTrip(
+            @PathVariable Long tripId) {
+
+        log.info("[TripController] 여행 일정 삭제 - tripId: {}", tripId);
+
+        tripService.deleteTrip(tripId);
+
+        return ResponseEntity.ok()
+                .body(new ResponseDto(
+                        HttpStatus.OK,
+                        "여행 일정 삭제 성공",
+                        null
+                ));
+    }
 }
