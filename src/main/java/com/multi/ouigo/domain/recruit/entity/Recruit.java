@@ -5,6 +5,8 @@ import com.multi.ouigo.common.entitiy.BaseEntity;
 import com.multi.ouigo.domain.approval.entity.Approval;
 import com.multi.ouigo.domain.condition.entity.Condition;
 import com.multi.ouigo.domain.member.entity.Member;
+import com.multi.ouigo.domain.recruit.dto.req.UpdateRecruitReqDto;
+import com.multi.ouigo.domain.tourist.entity.TouristSpot;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,12 +26,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
+@Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "recruits")
+@Where(clause = "del_yn = 0")
 public class Recruit extends BaseEntity {
 
     @Id
@@ -37,8 +42,10 @@ public class Recruit extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column
-    private int touristSpotId;
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tourist_spot_id")
+    private TouristSpot touristSpot;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,17 +81,19 @@ public class Recruit extends BaseEntity {
     }
 
     public void addCondition(Condition condition) {
+        if (this.conditions == null) {
+            this.conditions = new ArrayList<>();
+        }
         this.conditions.add(condition);
         condition.setRecruit(this);
     }
 
     @Builder
-    public Recruit(String title, String content, String category, int touristSpotId,
+    public Recruit(String title, String content, String category, Long touristSpotId,
         LocalDate startDate, LocalDate endDate) {
         this.title = title;
         this.content = content;
         this.category = category;
-        this.touristSpotId = touristSpotId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.approvals = new ArrayList<>();
@@ -92,4 +101,11 @@ public class Recruit extends BaseEntity {
     }
 
 
+    public void updateRecruit(UpdateRecruitReqDto updateRecruitReqDto) {
+        this.title = updateRecruitReqDto.getRecruitTitle();
+        this.content = updateRecruitReqDto.getRecruitContent();
+        this.category = updateRecruitReqDto.getRecruitCategory();
+        this.startDate = updateRecruitReqDto.getStartDate();
+        this.endDate = updateRecruitReqDto.getEndDate();
+    }
 }
