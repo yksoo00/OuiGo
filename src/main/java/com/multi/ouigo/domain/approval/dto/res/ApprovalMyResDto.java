@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApprovalResDto {
+public class ApprovalMyResDto {
 
-    private String memberName;
-    private int memberAge;
-    private String memberGender;
+    private String memberNickName;
     private ApprovalStatus status;
+    private int travelCountry;
+
 }

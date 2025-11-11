@@ -1,8 +1,10 @@
 package com.multi.ouigo.domain.recruit.service;
 
+import com.multi.ouigo.common.exception.custom.AlreadyAppliedException;
 import com.multi.ouigo.common.exception.custom.NotAuthorizedException;
 import com.multi.ouigo.common.exception.custom.NotFindException;
 import com.multi.ouigo.common.jwt.provider.TokenProvider;
+import com.multi.ouigo.domain.approval.entity.Approval;
 import com.multi.ouigo.domain.approval.repository.ApprovalRepository;
 import com.multi.ouigo.domain.condition.entity.Condition;
 import com.multi.ouigo.domain.condition.mapper.ConditionRepository;
@@ -130,6 +132,9 @@ public class RecruitService {
                 updateRecruitReqDto.getTouristSpotId())
             .orElseThrow(() -> new NotFindException("관광지를 찾을 수 없습니다"));
 
+        if (!recruit.getMember().getNo().equals(member.getNo())) {
+            throw new NotAuthorizedException("본인 글만 수정할 수 있습니다");
+        }
         recruit.setTouristSpot(touristSpot);
 
         recruit.updateRecruit(updateRecruitReqDto);
@@ -169,6 +174,29 @@ public class RecruitService {
         }
         recruit.setDeleted(true);
 
+
+    }
+
+    @Transactional
+    public void participateRecruit(HttpServletRequest request, Long recruitId) {
+        String memberId = tokenProvider.extractMemberId(request);
+
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
+
+        Recruit recruit = recruitRepository.findById(recruitId)
+            .orElseThrow(() -> new NotFindException("모집 글을 찾을 수 없습니다"));
+
+        if (recruit.getMember().getNo().equals(member.getNo())) {
+            throw new NotAuthorizedException("본인 글에 참여할 수 없습니다");
+        }
+
+        if (approvalRepository.existsByRecruitAndMember(recruit, member)) {
+            throw new AlreadyAppliedException("이미 신청한 모집글입니다.");
+        }
+        Approval approval = Approval.builder().member(member).recruit(recruit).build();
+
+        recruit.addApproval(approval);
 
     }
 }
