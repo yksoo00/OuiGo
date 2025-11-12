@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>프로필 수정 - OUIGO</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{navbar :: navbar}"></div>
+
+<!-- Main Content -->
+<div style="background-color: #f8f9fa; min-height: 100vh; padding: 40px 20px;">
+    <div class="edit-container">
+        <!-- Header -->
+        <div class="edit-header">
+            <div class="edit-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00BFFF" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                개인정보 수정
+            </div>
+        </div>
+
+        <!-- Profile Image Edit -->
+        <div class="profile-image-edit">
+            <img id="profileImagePreview" src="/images/default-profile.png" alt="프로필" class="profile-image-preview">
+            <div>
+                <input type="file" id="profileImageInput" accept="image/*" onchange="previewImage(event)" style="display: none;">
+                <button class="btn-upload-image" onclick="document.getElementById('profileImageInput').click()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    프로필 이미지 변경
+                </button>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form id="profileEditForm" onsubmit="submitProfile(event)">
+            <!-- 닉네임 -->
+            <div class="form-group">
+                <label class="form-label">
+                    닉네임 <span class="required">*</span>
+                </label>
+                <input type="text" id="nickName" class="form-input" placeholder="닉네임을 입력하세요 (최대 6자)" maxlength="6" required>
+            </div>
+
+            <!-- 이메일 -->
+            <div class="form-group">
+                <label class="form-label">
+                    이메일 <span class="required">*</span>
+                </label>
+                <input type="email" id="email" class="form-input" placeholder="example@email.com" required>
+            </div>
+
+            <!-- 자기소개 -->
+            <div class="form-group">
+                <label class="form-label">
+                    자기소개
+                </label>
+                <textarea id="introduction" class="form-textarea" placeholder="자기소개를 입력하세요 (최대 150자)" maxlength="150" oninput="updateCharCount()"></textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span> / 150
+                </div>
+            </div>
+
+            <!-- Button Group -->
+            <div class="button-group">
+                <button type="button" class="btn-cancel" onclick="cancelEdit()">취소</button>
+                <button type="submit" class="btn-submit">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTc2MjkzNTAxMH0.Gyxt6W8gl_A04_y9jthFSAtzdla5UIdF0p5RhF9vsUMS0_u0FGIu4G3eSU3ngwQoZfpct2UXM2vx6wMgWwkojQ";
+    const memberNo = /*[[${memberNo}]]*/ 1;
+    /*]]>*/
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProfile();
+    });
+
+    // 프로필 로드
+    async function loadProfile() {
+        try {
+            //  /api/v1/myPage
+            const response = await fetch(`/api/v1/myPage?memberNo=${memberNo}`);
+            const data = await response.json();
+
+            if (data.status === 200) {
+                const profile = data.data;
+                document.getElementById('profileImagePreview').src = profile.profileImage || '/images/default-profile.png';
+                document.getElementById('nickName').value = profile.nickName;
+                document.getElementById('email').value = profile.email;
+                document.getElementById('introduction').value = profile.introduction || '';
+                updateCharCount();
+            }
+        } catch (error) {
+            console.error('프로필 로드 오류:', error);
+            alert('프로필을 불러올 수 없습니다.');
+        }
+    }
+
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profileImagePreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function updateCharCount() {
+        const intro = document.getElementById('introduction').value;
+        document.getElementById('charCount').textContent = intro.length;
+    }
+
+    // 프로필
+    async function submitProfile(event) {
+        event.preventDefault();
+
+        const profileData = {
+            nickName: document.getElementById('nickName').value,
+            email: document.getElementById('email').value,
+            profileImage: document.getElementById('profileImagePreview').src,
+            introduction: document.getElementById('introduction').value
+        };
+
+        try {
+            // ✅ /api/v1/myPage/profile → /api/v1/myPage
+            const response = await fetch(`/api/v1/myPage?memberNo=${memberNo}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(profileData)
+            });
+
+            const data = await response.json();
+
+            if (data.status === 200) {
+                alert('프로필이 수정되었습니다.');
+                window.location.href = `/myPage?memberNo=${memberNo}`;
+            } else {
+                alert(`수정 실패: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('프로필 수정 오류:', error);
+            alert('서버 오류가 발생했습니다.');
+        }
+    }
+
+    function cancelEdit() {
+        window.location.href = `/myPage?memberNo=${memberNo}`;
+    }
+</script>
+</body>
+</html>

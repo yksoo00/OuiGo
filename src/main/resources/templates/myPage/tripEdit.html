@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>여행 일정 수정 - OUIGO</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{navbar :: navbar}"></div>
+
+<!-- Main Content -->
+<div style="background-color: #f8f9fa; min-height: 100vh; padding: 40px 20px;">
+    <div class="edit-container">
+        <!-- Header with Buttons -->
+        <div class="edit-header">
+            <div class="edit-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00BFFF" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                여행 일정 수정
+            </div>
+
+            <!-- Header Button Group -->
+            <div class="header-button-group">
+                <button type="button" class="btn-header-cancel" onclick="cancelEdit()">
+                    취소
+                </button>
+                <button type="button" class="btn-header-submit" onclick="submitTripFromButton()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    수정 완료
+                </button>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form id="tripEditForm" onsubmit="submitTrip(event)">
+            <!-- 여행 지역 -->
+            <div class="form-group">
+                <label class="form-label">
+                    여행 지역 <span class="required">*</span>
+                </label>
+                <input type="text" id="destination" class="form-input" placeholder="예: 제주도, 부산, 강릉" required>
+            </div>
+
+            <!-- 여행 관광지 -->
+            <div class="form-group">
+                <label class="form-label">
+                    여행 관광지 <span class="required">*</span>
+                </label>
+                <input type="text" id="title" class="form-input" placeholder="예: 성산일출봉, 해운대 해수욕장" required>
+            </div>
+
+            <!-- 날짜 -->
+            <div class="date-group">
+                <div class="form-group">
+                    <label class="form-label">
+                        시작일 <span class="required">*</span>
+                    </label>
+                    <input type="date" id="startDate" class="form-input" required onchange="validateDates()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        종료일 <span class="required">*</span>
+                    </label>
+                    <input type="date" id="endDate" class="form-input" required onchange="validateDates()">
+                </div>
+            </div>
+
+            <!-- 예산 -->
+            <div class="form-group">
+                <label class="form-label">
+                    예산 (원)
+                </label>
+                <input type="number" id="budget" class="form-input" placeholder="예: 500000" min="0" step="10000">
+                <div class="form-hint">숫자만 입력하세요 (선택사항)</div>
+            </div>
+
+            <!-- 메모 -->
+            <div class="form-group">
+                <label class="form-label">
+                    여행 메모
+                </label>
+                <textarea id="memo" class="form-textarea" placeholder="여행 메모를 입력하세요 (최대 100자)" maxlength="100" oninput="updateCharCount()"></textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span> / 100
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTc2MjkzNTAxMH0.Gyxt6W8gl_A04_y9jthFSAtzdla5UIdF0p5RhF9vsUMS0_u0FGIu4G3eSU3ngwQoZfpct2UXM2vx6wMgWwkojQ";
+
+    const tripId = /*[[${tripId}]]*/ 1;
+    const memberNo = /*[[${memberNo}]]*/ 1;
+    /*]]>*/
+
+    // 페이지 로드 시 여행 정보 로드
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTrip();
+    });
+
+    // localStorage에서 여행 정보 로드
+    function loadTrip() {
+        try {
+            const tripData = localStorage.getItem('editTrip');
+
+            if (tripData) {
+                const trip = JSON.parse(tripData);
+
+                document.getElementById('destination').value = trip.destination;
+                document.getElementById('title').value = trip.title;
+                document.getElementById('startDate').value = trip.startDate;
+                document.getElementById('endDate').value = trip.endDate;
+                document.getElementById('budget').value = trip.budget || '';
+                document.getElementById('memo').value = trip.memo || '';
+                updateCharCount();
+
+                // 사용 후 localStorage 삭제
+                localStorage.removeItem('editTrip');
+            } else {
+                alert('여행 정보를 불러올 수 없습니다.');
+                cancelEdit();
+            }
+        } catch (error) {
+            console.error('여행 정보 로드 오류:', error);
+            alert('여행 정보를 불러올 수 없습니다.');
+            cancelEdit();
+        }
+    }
+
+    // 날짜 유효성 검증
+    function validateDates() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (startDate && endDate) {
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('종료일은 시작일보다 이후여야 합니다.');
+                document.getElementById('endDate').value = '';
+            }
+        }
+    }
+
+    // 글자 수 업데이트
+    function updateCharCount() {
+        const memo = document.getElementById('memo').value;
+        document.getElementById('charCount').textContent = memo.length;
+    }
+
+    // 헤더 버튼에서 호출하는 함수
+    function submitTripFromButton() {
+        const form = document.getElementById('tripEditForm');
+
+        // HTML5 폼 검증 실행
+        if (form.checkValidity()) {
+            submitTrip(new Event('submit'));
+        } else {
+            // 검증 실패 시 첫 번째 에러 필드로 포커스
+            form.reportValidity();
+        }
+    }
+
+    // 여행 수정 제출 (백엔드 연결)
+    async function submitTrip(event) {
+        event.preventDefault();
+
+        // TripReqDto 형식에 맞게 데이터 구성
+        const tripData = {
+            destination: document.getElementById('destination').value,
+            title: document.getElementById('title').value,
+            startDate: document.getElementById('startDate').value,  // LocalDate 형식
+            endDate: document.getElementById('endDate').value,      // LocalDate 형식
+            budget: parseInt(document.getElementById('budget').value) || 0,
+            memo: document.getElementById('memo').value
+        };
+
+        console.log('전송할 데이터:', tripData);
+
+        try {
+            // PUT /api/v1/myPage/trips/{tripId}
+            const response = await fetch(`/api/v1/myPage/trips/${tripId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(tripData)
+            });
+
+            const data = await response.json();
+            console.log('서버 응답:', data);
+
+            if (data.status === 200) {
+                alert('여행 일정이 수정되었습니다.');
+                window.location.href = `/myPage?memberNo=${memberNo}`;
+            } else {
+                alert(`수정 실패: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('여행 수정 오류:', error);
+            alert('서버 오류가 발생했습니다.');
+        }
+    }
+
+    // 취소 버튼
+    function cancelEdit() {
+        window.location.href = `/myPage?memberNo=${memberNo}`;
+    }
+</script>
+</body>
+</html>

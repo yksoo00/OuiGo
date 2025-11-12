@@ -1,0 +1,748 @@
+/* ==================== 마이페이지 전용 스타일 ==================== */
+
+/* 프로필 컨테이너 - 지도 영역 대체 */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
+}
+
+/* 프로필 카드 */
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+/* 프로필 이미지 */
+.profile-image-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #00BFFF;
+    background: linear-gradient(135deg, #FFB84D 0%, #FF9A3D 100%);
+}
+
+.profile-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: white;
+    border-radius: 50%;
+    padding: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 프로필 정보 */
+.profile-info {
+    text-align: center;
+    width: 100%;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.verified-badge {
+    color: #00BFFF;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    margin-top: 12px;
+}
+
+.profile-detail-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.profile-intro {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    width: 100%;
+    text-align: center;
+}
+
+/* 프로필 수정 버튼 */
+.profile-edit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #00BFFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.profile-edit-btn:hover {
+    background: #00A8E8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+}
+
+/* 여행 카드 섹션 */
+.trip-card-section {
+    background: linear-gradient(135deg, #00BFFF 0%, #00A8E8 100%);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(0, 191, 255, 0.3);
+}
+
+.trip-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.trip-card-title {
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-id {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* 카드 통계 */
+.card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.stat-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    display: block;
+    margin: 8px 0;
+}
+
+.stat-label {
+    font-size: 13px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 여행 일정 섹션 */
+.trips-section {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.trips-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.trips-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-add-trip {
+    padding: 12px 24px;
+    background: #00BFFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-add-trip:hover {
+    background: #00A8E8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+}
+
+/* 여행 카드 리스트 */
+.trip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.trip-card {
+    background: white;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.trip-card:hover {
+    border-color: #00BFFF;
+    box-shadow: 0 4px 16px rgba(0, 191, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.trip-destination {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.trip-title {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.trip-dates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.trip-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 12px;
+}
+
+.trip-duration {
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.trip-budget {
+    font-size: 16px;
+    font-weight: 600;
+    color: #00BFFF;
+}
+
+.trip-dday {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #FF6B6B;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.trip-dday.upcoming {
+    background: #00BFFF;
+}
+
+.trip-dday.past {
+    background: #95a5a6;
+}
+
+/* 여행 액션 버튼 */
+.trip-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-edit, .btn-delete {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+
+.btn-edit {
+    background: #f8f9fa;
+    color: #333;
+}
+
+.btn-edit:hover {
+    background: #e9ecef;
+}
+
+.btn-delete {
+    background: #fff5f5;
+    color: #FF6B6B;
+}
+
+.btn-delete:hover {
+    background: #ffe0e0;
+}
+
+/* 빈 상태 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-text {
+    font-size: 16px;
+    margin-bottom: 24px;
+}
+
+/* 스크롤바 */
+.trip-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.trip-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.trip-list::-webkit-scrollbar-thumb {
+    background: #00BFFF;
+    border-radius: 10px;
+}
+
+.trip-list::-webkit-scrollbar-thumb:hover {
+    background: #00A8E8;
+}
+
+/* 프로필/여행 수정 페이지 공통 스타일 */
+.edit-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.edit-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-back {
+    padding: 10px 20px;
+    background: #f8f9fa;
+    color: #666;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-back:hover {
+    background: #e9ecef;
+}
+
+/* 폼 요소 */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-label .required {
+    color: #FF6B6B;
+    margin-left: 4px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #00BFFF;
+    box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.1);
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: #00BFFF;
+    box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.1);
+}
+
+.date-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 13px;
+    color: #999;
+    margin-top: 6px;
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 2px solid #f0f0f0;
+}
+
+/* 취소 버튼 */
+.btn-cancel {
+    flex: 1;
+    padding: 16px;
+    background: #f8f9fa;
+    color: #666;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+    background: #e9ecef;
+}
+
+/* 등록/저장/수정 버튼 */
+.btn-submit {
+    flex: 1;
+    padding: 16px;
+    background: #00BFFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-submit:hover {
+    background: #00A8E8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+}
+
+.form-hint {
+    font-size: 13px;
+    color: #999;
+    margin-top: 6px;
+}
+
+/* 프로필 이미지 수정 */
+.profile-image-edit {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.profile-image-preview {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #00BFFF;
+    margin-bottom: 16px;
+}
+
+.btn-upload-image {
+    padding: 10px 24px;
+    background: #00BFFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-upload-image:hover {
+    background: #00A8E8;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+    .card-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .trip-list {
+        max-height: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px;
+    }
+
+    .profile-card {
+        padding: 30px 20px;
+    }
+
+    .profile-image-wrapper {
+        width: 140px;
+        height: 140px;
+    }
+
+    .trip-card-section {
+        padding: 24px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
+
+    .trips-section {
+        padding: 20px;
+    }
+
+    .trip-card {
+        padding: 20px;
+    }
+
+    .trip-destination {
+        font-size: 18px;
+    }
+
+    .edit-container {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    .date-group {
+        grid-template-columns: 1fr;
+    }
+
+    /* 여행 카드 리스트 - 스크롤 높이 증가 */
+    .trip-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: none;
+        overflow-y: auto;
+        padding-right: 8px;
+    }
+
+    .trip-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .trip-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .trip-list::-webkit-scrollbar-thumb {
+        background: #00BFFF;
+        border-radius: 10px;
+    }
+
+    .trip-list::-webkit-scrollbar-thumb:hover {
+        background: #00A8E8;
+    }
+
+    /* ========== 헤더 버튼 그룹 (등록/수정 페이지용)  -> 버튼 헤더에서 내릴 때 삭제 ========== */
+
+    .header-button-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* 헤더 취소 버튼 */
+    .btn-header-cancel {
+        padding: 10px 20px;
+        background: #f8f9fa;
+        color: #666;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-header-cancel:hover {
+        background: #e9ecef;
+    }
+
+    /* 헤더 등록/수정 버튼 */
+    .btn-header-submit {
+        padding: 10px 24px;
+        background: #00BFFF;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-header-submit:hover {
+        background: #00A8E8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+    }
+
+    /* 반응형 - 모바일에서 버튼 세로 배치 */
+    @media (max-width: 768px) {
+        .edit-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .header-button-group {
+            width: 100%;
+        }
+
+        .btn-header-cancel,
+        .btn-header-submit {
+            flex: 1;
+        }
+    }
+
+}
