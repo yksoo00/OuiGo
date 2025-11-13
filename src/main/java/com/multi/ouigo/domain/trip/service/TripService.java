@@ -1,14 +1,17 @@
 package com.multi.ouigo.domain.trip.service;
 
 import com.multi.ouigo.common.exception.custom.NotFindException;
+import com.multi.ouigo.common.jwt.provider.TokenProvider;
 import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.repository.MemRepository;
+import com.multi.ouigo.domain.member.repository.MemberRepository;
 import com.multi.ouigo.domain.trip.dto.req.TripReqDto;
 import com.multi.ouigo.domain.trip.dto.res.TripListResDto;
 import com.multi.ouigo.domain.trip.dto.res.TripResDto;
 import com.multi.ouigo.domain.trip.entity.Trip;
 import com.multi.ouigo.domain.trip.mapper.TripMapper;
 import com.multi.ouigo.domain.trip.repository.TripRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +27,17 @@ public class TripService {
     private final MemRepository memRepository;
     private final TripRepository tripRepository;
     private final TripMapper tripMapper;
+    private final TokenProvider tokenProvider;
+    private final MemberRepository memberRepository;
 
     // 여행 일정 등록
 
     @Transactional
-    public TripResDto createTrip(Long memberNo, TripReqDto tripReqDto) {
+    public TripResDto createTrip(HttpServletRequest request, TripReqDto tripReqDto) {
 
-        log.info("여행 일정 등록 - memberNo: {}, destination: {}", memberNo, tripReqDto.getDestination());
-
-        // 회원 조회
-        Member member = memRepository.findByNo(memberNo)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        String memberId = tokenProvider.extractMemberId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
 
         // 날짜 유효성 검증
         if (tripReqDto.getEndDate().isBefore(tripReqDto.getStartDate())) {
@@ -62,11 +65,13 @@ public class TripService {
 
     // 여행 일정 목록 조회
 
-    public List<TripListResDto> getTripList(Long memberNo) {
+    public List<TripListResDto> getTripList(HttpServletRequest request) {
 
-        log.info("여행 일정 목록 조회 - memberNo: {}", memberNo);
+        String memberId = tokenProvider.extractMemberId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
 
-        List<Trip> trips = tripRepository.findByMemberNoOrderByStartDateDesc(memberNo);
+        List<Trip> trips = tripRepository.findByMemberNoOrderByStartDateDesc(member.getNo());
 
         return trips.stream()
             .map(trip -> {

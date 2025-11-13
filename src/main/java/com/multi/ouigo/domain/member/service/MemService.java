@@ -1,77 +1,79 @@
 package com.multi.ouigo.domain.member.service;
 
+import com.multi.ouigo.common.exception.custom.NotFindException;
+import com.multi.ouigo.common.jwt.provider.TokenProvider;
 import com.multi.ouigo.domain.member.dto.res.MemProfResDto;
 import com.multi.ouigo.domain.member.dto.res.MemResDto;
 import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.mapper.MemMapper;
 import com.multi.ouigo.domain.member.repository.MemRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.multi.ouigo.domain.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemService {
 
+    private final TokenProvider tokenProvider;
+    private final MemberRepository memberRepository;
     private final MemRepository memRepository;
     private final MemMapper memMapper;
-    private final String profileimg = "C:/uploads/profiles";
-
+    @Value("${profileimg}")
+    private String profileimg;
 
     // 마이페이지 - 전체 정보 조회
 
-    public MemProfResDto getMemberProfile(Long memberNo) {
+    public MemProfResDto getMemberProfile(HttpServletRequest request) {
 
-            log.info("회원 정보 조회 - no: {}", memberNo);
+        String memberId = tokenProvider.extractMemberId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
 
-            Member member = memRepository.findByNo(memberNo)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-
-            return memMapper.memProfResDto(member);
+        return memMapper.memProfResDto(member);
 
     }
-
 
     // 마이페이지 - 기본 정보 수정
 
     @Transactional
-    public MemResDto updateMemberProfile(Long memberNo, MemResDto memResDto) {
-
+    public MemResDto updateMemberProfile(HttpServletRequest request, MemResDto memResDto) {
 
         // 회원 조회
-        Member member = memRepository.findByNo(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-
+        String memberId = tokenProvider.extractMemberId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
 
         // 정보 수정
-        member.update(memResDto.getNickName(),memResDto.getEmail(), memResDto.getProfileImage(),memResDto.getIntroduction());
-
+        member.update(memResDto.getNickName(), memResDto.getEmail(), memResDto.getProfileImage(),
+            memResDto.getIntroduction());
 
         // 저장
-        log.info("회원 정보 수정 완료 - no: {}", memberNo);
         return memMapper.toMemResDto(member);
     }
 
 
     // 기본 정보 수정 - 프로필 사진 수정
     @Transactional
-    public String uploadProfileImage(Long memberNo, MultipartFile file) {
+    public String uploadProfileImage(HttpServletRequest request, MultipartFile file) {
 
-        // 회원 조회
-        Member member = memRepository.findById(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        String memberId = tokenProvider.extractMemberId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+            .orElseThrow(() -> new NotFindException("없는 멤버입니다"));
 
         // 파일 유효성 검증
-        if(file.isEmpty()) {
+        if (file.isEmpty()) {
             throw new IllegalArgumentException("파일이 없습니다.");
         }
 
@@ -98,10 +100,10 @@ public class MemService {
 
             // DB 업데이트
             member.update(
-                    member.getNickName(),
-                    member.getEmail(),
-                    member.getProfileImage(),
-                    member.getIntroduction()
+                member.getNickName(),
+                member.getEmail(),
+                member.getProfileImage(),
+                member.getIntroduction()
             );
 
             log.info("프로필 이미지 업로드 완료 - URL: {}", imageUrl);

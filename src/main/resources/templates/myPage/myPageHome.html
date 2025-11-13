@@ -1,137 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>마이페이지 - OUIGO</title>
-    <link rel="stylesheet" th:href="@{/css/layout.css}">
-    <link rel="stylesheet" th:href="@{/css/navbar.css}">
-    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+  <meta charset="UTF-8">
+  <title>마이페이지 - OUIGO</title>
+  <link rel="stylesheet" th:href="@{/css/layout.css}">
+  <link rel="stylesheet" th:href="@{/css/navbar.css}">
+  <link rel="stylesheet" th:href="@{/css/mypage.css}">
 </head>
 <body>
-<!-- Navbar -->
+
 <div th:replace="~{navbar :: navbar}"></div>
 
-<!-- Main Layout -->
 <div class="main-layout">
-    <!-- Left Side - 프로필 (개인 정보) -->
-    <div class="map-container">
-        <div class="profile-container">
-            <div class="profile-card">
-                <!-- 프로필 이미지 -->
-                <div class="profile-image-wrapper">
-                    <img id="profileImage" src="/images/default-profile.png" alt="프로필" class="profile-image">
-                    <div class="profile-badge">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#00BFFF">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                </div>
 
-                <!-- 프로필 정보 -->
-                <div class="profile-info">
-                    <div class="profile-name">
+  <!-- ⭐ 왼쪽: map-container 안에 leftContainer 추가 -->
+  <div class="map-container">
+    <div id="leftContainer"></div>
+  </div>
 
-                        <span id="nickName">nickName</span>
-                        <svg class="verified-badge" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-
-                    <div class="profile-details">
-                        <div class="profile-detail-item">
-
-                            <span id="age">20대</span>
-                            <span style="color: #ddd; margin: 0 4px;">|</span>
-
-                            <span id="gender">남자</span>
-                        </div>
-                        <div class="profile-detail-item">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-
-                            <span id="email">test@gmail.com</span>
-                        </div>
-                    </div>
-
-                    <div class="profile-intro" id="introduction">
-                        자기소개가 들어갑니다.
-                    </div>
-                </div>
-
-                <!-- 프로필 수정 버튼 -->
-                <button class="profile-edit-btn" onclick="editProfile()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                    프로필 수정
-                </button>
-            </div>
+  <!-- 오른쪽 그대로 유지 -->
+  <div class="content-container">
+    <div id="rightContainer">
+      <div class="trip-card-section">
+        <div class="trip-card-header">
+          <div class="trip-card-title">내 여행 카드 <span class="card-id">Trip Card</span></div>
         </div>
+
+        <div class="card-stats">
+          <div class="stat-item">
+            <div class="stat-icon">🗺️</div>
+            <span id="dstcCnt" class="stat-value">0</span>
+            <div class="stat-label">Destination</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">📍</div>
+            <span id="ttlCnt" class="stat-value">0</span>
+            <div class="stat-label">Spot</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">📅</div>
+            <span id="dayCnt" class="stat-value">0</span>
+            <div class="stat-label">Days</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trips-section">
+        <div class="trips-header">
+          <div class="trips-title">내 여행 일정</div>
+          <button class="btn-add-trip" onclick="createTrip()">일정 추가</button>
+        </div>
+        <div id="tripList" class="trip-list"></div>
+      </div>
     </div>
-
-    <!-- Right Side - 여행 카드 & 일정 -->
-    <div class="content-container">
-        <!-- 여행 카드 통계 -->
-        <div class="trip-card-section">
-            <div class="trip-card-header">
-                <div class="trip-card-title">
-                    내 여행 카드
-                    <span class="card-id">Trip Card</span>
-                </div>
-            </div>
-
-            <div class="card-stats">
-                <div class="stat-item">
-                    <div class="stat-icon">🗺️</div>
-                    <!-- dstcCnt 데이터 바인딩 -->
-                    <span class="stat-value" id="dstcCnt">0</span>
-                    <div class="stat-label">Destination</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">📍</div>
-                    <!-- ttlCnt 데이터 바인딩 -->
-                    <span class="stat-value" id="ttlCnt">0</span>
-                    <div class="stat-label">Spot</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">📅</div>
-                    <!-- dayCnt 데이터 바인딩 -->
-                    <span class="stat-value" id="dayCnt">0</span>
-                    <div class="stat-label">DAYS</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 여행 일정 목록 -->
-        <div class="trips-section">
-            <div class="trips-header">
-                <div class="trips-title">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    내 여행 일정
-                </div>
-
-                <button class="btn-add-trip" onclick="createTrip()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    일정 추가
-                </button>
-            </div>
-
-            <div class="trip-list" id="tripList">
-                <!-- JavaScript로 동적 생성 -->
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
 <script th:src="@{/js/mypage.js}"></script>
+<script th:src="@{/js/api.js}" defer></script>
 </body>
 </html>
