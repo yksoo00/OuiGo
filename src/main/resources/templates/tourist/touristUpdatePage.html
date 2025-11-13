@@ -42,30 +42,40 @@
                   method="post">
 
                 <div class="form-group">
+                    <label for="district" class="form-label">지역 (시/군/구)</label>
                     <input type="text" id="district" name="district" class="form-control"
-                           placeholder="지역을 입력해주세요." required>
+                           placeholder="예: 서울시 종로구" required>
                 </div>
+
                 <div class="form-group">
+                    <label for="title" class="form-label">관광지 명</label>
                     <input type="text" id="title" name="title" class="form-control"
-                           placeholder="여행지를 입력해주세요." required>
+                           placeholder="예: 경복궁" required>
                 </div>
+
                 <div class="form-group">
+                    <label for="description" class="form-label">설명</label>
                     <textarea id="description" name="description" class="form-control" rows="5"
-                              placeholder="여행 설명을 입력해주세요."></textarea>
+                              placeholder="이 관광지에 대한 간단한 설명을 적어주세요."></textarea>
                 </div>
+
                 <div class="form-group">
+                    <label for="map-address-display" class="form-label">주소 (지도 클릭)</label>
                     <input type="text" class="form-control" id="map-address-display"
-                           placeholder="지도위에 여행지 위치를 클릭해주세요." disabled>
+                           placeholder="지도에서 위치를 다시 지정해주세요." disabled>
                 </div>
                 <input type="hidden" id="address" name="address" value="주소 임시값">
+
                 <div class="form-group">
+                    <label for="phone" class="form-label">전화번호 (선택)</label>
                     <input type="text" id="phone" name="phone" class="form-control"
-                           placeholder="전화번호를 입력해주세요.">
+                           placeholder="예: 02-123-4567">
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-submit">Update</button>
-                    <a th:href="@{/layout/{id}(id=${touristId})}" class="btn-cancel">Cancel</a>                </div>
+                    <a th:href="@{/layout/{id}(id=${touristId})}" class="btn-cancel">Cancel</a>
+                </div>
             </form>
 
         </div>
