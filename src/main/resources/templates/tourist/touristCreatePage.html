@@ -62,11 +62,13 @@
         </div>
 
         <div class="form-group">
-          <label for="map-address-display" class="form-label">주소 (지도 클릭)</label>
-          <input type="text" class="form-control" id="map-address-display"
-                 placeholder="지도에서 위치를 클릭하면 주소가 자동 입력됩니다." disabled>
+          <label for="map-address-display" class="form-label">주소 (관광지 선택)</label>
+          <input type="text" id="map-address-display" class="form-control" disabled
+                 placeholder="지도에서 관광지를 클릭하면 자동 입력됩니다.">
         </div>
-        <input type="hidden" id="address" name="address" value="주소 임시값">
+
+        <!-- touristSpotId 값을 숨겨서 저장 -->
+        <input type="hidden" id="touristSpotId">
 
         <div class="form-group">
           <label for="phone" class="form-label">전화번호</label>
@@ -88,34 +90,36 @@
 <script th:src="@{/js/mapClickToAddress.js}"></script>
 
 <script>
-  document.getElementById('tourist-create-form').addEventListener('submit', function (event) {
+  document.getElementById('tourist-create-form').addEventListener('submit', async function (event) {
 
     event.preventDefault();
 
     const form = event.target;
     const formData = new FormData(form);
-    const actionUrl = form.action;
+    const actionUrl = form.action;   // → "/api/v1/tourist-spots"
 
-    fetch(actionUrl, {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
+    try {
+      // 🔵 fetch → apiFetch 로 변경 (FormData 자동 처리)
+      const response = await apiFetch(actionUrl, {
+        method: "POST",
+        body: formData   // ← FormData일 때 Content-Type 자동 적용 X
+      });
+
+      if (!response.ok) {
+        throw new Error("서버 응답 오류");
       }
-      throw new Error('서버 응답이 올바르지 않습니다.');
-    })
-    .then(data => {
+
+      const data = await response.json();
+
       alert(data.message);
 
-      const newSpotId = data.data; // ex: 118
+      const newSpotId = data.data;
       window.location.href = "/tourist/touristDetail?id=" + newSpotId;
-    })
-    .catch(error => {
+
+    } catch (error) {
       console.error('Error submitting form:', error);
       alert('등록 중 오류가 발생했습니다: ' + error.message);
-    });
+    }
   });
 </script>
 </body>
