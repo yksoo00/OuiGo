@@ -276,12 +276,13 @@ async function fetchDetails(id) {
 
         // 이미지 검색 키워드 정제
         let keyword = spot.title.replace(/해양광장|광장/g, '').trim();
-
+        const mainImageContainer = document.querySelector('.image-slider-container');
         const mainImage = await fetchImages(keyword);
 
         if (mainImage) {
-            document.querySelector('.image-slider-container').innerHTML =
+            mainImageContainer.innerHTML =
                 `<img src="${mainImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
+            mainImageContainer.style.display = 'block';
         }
 
         // 지도 이동
