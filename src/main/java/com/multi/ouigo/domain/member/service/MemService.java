@@ -102,7 +102,7 @@ public class MemService {
             member.update(
                 member.getNickName(),
                 member.getEmail(),
-                member.getProfileImage(),
+                    imageUrl,
                 member.getIntroduction()
             );
 
