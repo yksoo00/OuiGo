@@ -1,5 +1,10 @@
 package com.multi.ouigo.path.controller;
 
+import com.multi.ouigo.common.exception.custom.TokenException;
+import com.multi.ouigo.common.jwt.provider.TokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,12 +12,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class PathController {
 
-    @GetMapping("/tourist")
-    public String showTouristPage() {
+    private final TokenProvider tokenProvider;
 
-        return "tourist";
+    @GetMapping("/tourist/touristListPage")
+    public String TouristPage() {
+
+        return "tourist/touristListPage";
+    }
+
+    @GetMapping("/tourist/touristCreatePage")
+    public String touristCreatePage() {
+        // templates/tourist/touristCreatePage.html 파일을 반환
+        return "tourist/touristCreatePage";
     }
 
     @GetMapping("/loginForm")
@@ -20,22 +35,46 @@ public class PathController {
         return "loginForm";
     }
 
-    @GetMapping("/tourist-detail")
-    public String showTouristDetailPage(@RequestParam Long id, Model model) {
-        model.addAttribute("touristId", id);
-        return "touristDetail";
+
+    @GetMapping("/tourist/touristDetail/{touristId}")
+    public String TouristDetailPage(@PathVariable Long touristId, Model model, HttpServletRequest request) {
+        model.addAttribute("touristSpotId", touristId);
+        model.addAttribute("pageName", "touristDetail");
+        model.addAttribute("pageFragment", "tourist/touristDetail");
+
+        String currentMemberId = null;
+        try {
+            currentMemberId = tokenProvider.extractMemberId(request);
+            log.info("[PathController] 로그인 사용자 ID: {}", currentMemberId);
+        } catch (TokenException e) {
+            // 토큰이 없거나 유효하지 않은 경우 -> 로그인 X 상태
+            log.warn("[PathController] 로그인 상태가 아닙니다.");
+            // currentMemberId는 이미 null로 유지됩니다.
+        }
+
+        // 로그인 여부와 관계없이 모델에 추가
+        model.addAttribute("currentMemberId", currentMemberId);
+        return "layout";
     }
 
+    @GetMapping("/tourist/touristUpdatePage")
+    public String touristUpdatePage(@RequestParam Long id, Model model) {
+        model.addAttribute("touristId", id);
+        return "tourist/touristUpdatePage";
+    }
+
+
     @GetMapping("/recruit/recruitListPage")
-    public String recruitListPage() {
-        // templates/recruit/recruitList.html
-        return "recruit/recruitListPage";
+    public String recruitListPage(Model model) {
+
+        return "layout";
     }
 
     @GetMapping("/recruit/recruitUpdatePage")
-    public String recruitUpdatePage() {
+    public String recruitUpdatePage(Model model) {
+        model.addAttribute("pageName", "update");
 
-        return "recruit/recruitUpdatePage";
+        return "layout";
     }
 
     @GetMapping("/myPage/profilePage")
@@ -44,17 +83,20 @@ public class PathController {
         return "myPage/profilePage";
     }
 
+
     @GetMapping("/layout")
     public String layout(Model model) {
         model.addAttribute("pageFragment", "recruit/recruitListPage");
+        model.addAttribute("pageName", "list");
         return "layout";
     }
 
     @GetMapping("/recruit/{id}")
     public String recruitDetailPage(@PathVariable(name = "id") Long id, Model model) {
         model.addAttribute("recruitId", id);
-        System.out.println(id);
         model.addAttribute("pageFragment", "recruit/recruitDetailPage");
+        model.addAttribute("pageName", "detail");
+
         return "layout"; // templates/recruit/recruitDetailPage.html
     }
 
@@ -68,6 +110,7 @@ public class PathController {
     public String recruitCreatePage(Model model) {
         model.addAttribute("pageFragment", "recruit/recruitCreatePage");
         model.addAttribute("pageTitle", "모집글 작성");
+        model.addAttribute("pageName", "create");
         return "layout";
     }
 
@@ -76,6 +119,8 @@ public class PathController {
     public String recruitUpdatePage(@PathVariable Long recruitId, Model model) {
         model.addAttribute("pageFragment", "recruit/recruitUpdatePage");
         model.addAttribute("pageTitle", "모집글 수정");
+        model.addAttribute("pageName", "update");
+
         model.addAttribute("recruitId", recruitId);
         return "layout";
     }
@@ -99,7 +144,7 @@ public class PathController {
     }
 
     // 여행 일정 등록
-    
+
     // 여행 일정 수정
 
     @GetMapping("/myPage/tripEdit")
