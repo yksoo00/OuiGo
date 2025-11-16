@@ -60,4 +60,4 @@ logging:
       audit: OFF
       connection: OFF
 
-
+PROFILE_IMG: C:/uploads/profiles/
