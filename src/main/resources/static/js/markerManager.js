@@ -1,3 +1,5 @@
+/* markerManager.js */
+
 /**
  * markerManager.js
  * * - 전역 'map'과 'geocoder' 변수를 사용합니다.
@@ -10,57 +12,58 @@ let markers = [];
 
 function displayMapMarkers(spots) {
 
-  markers.forEach(marker => marker.setMap(null));
-  markers = [];
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
 
-  spots.forEach(spot => {
-    if (!spot.address) {
-      console.warn(`[${spot.title}] 주소(address)값이 없어 마커를 표시할 수 없습니다.`);
-      return;
-    }
+    spots.forEach(spot => {
+        if (!spot.address) {
+            console.warn(`[${spot.title}] 주소(address)값이 없어 마커를 표시할 수 없습니다.`);
+            return;
+        }
 
-    geocoder.addressSearch(spot.address, function (result, status) {
-      if (status === kakao.maps.services.Status.OK) {
-        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+        geocoder.addressSearch(spot.address, function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-        const marker = new kakao.maps.Marker({
-          map: map,
-          position: coords
+                const marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords
+                });
+
+                const overlayDiv = document.createElement("div");
+                overlayDiv.className = "tourist-overlay"; // 새로운 CSS 클래스 (아래 2번에서 정의)
+                overlayDiv.innerText = spot.title;
+
+                const overlay = new kakao.maps.CustomOverlay({
+                    position: coords,
+                    content: overlayDiv,
+                    yAnchor: 1.7,
+                    xAnchor: 0.5
+                });
+
+                overlay.setMap(null);
+
+                kakao.maps.event.addListener(marker, 'click', function () {
+                    window.location.href = `/tourist/touristDetail/${spot.id}`;
+                });
+
+                kakao.maps.event.addListener(marker, "mouseover", () => {
+                    overlay.setMap(map);
+                    overlayDiv.classList.add("show");
+                });
+
+                kakao.maps.event.addListener(marker, "mouseout", () => {
+                    overlayDiv.classList.remove("show");
+
+                    setTimeout(() => {
+                        if (!overlayDiv.classList.contains("show")) {
+                            overlay.setMap(null);
+                        }
+                    }, 150);
+                });
+
+                markers.push(marker);
+            }
         });
-
-        const infowindow = new kakao.maps.InfoWindow({
-          content: `
-    <div style="
-      padding:10px 16px;
-      background:white;
-      border-radius:12px;
-      border:2px solid #00BFFF;
-      font-weight:700;
-      color:#333;
-      font-size:16px;
-      box-shadow:0px 4px 12px rgba(0,0,0,0.15);
-      text-align:center;
-      white-space:nowrap;
-    ">
-      ${spot.title}
-    </div>
-  `,
-          removable: false   // ❗ X 버튼 제거!
-        });
-
-        kakao.maps.event.addListener(marker, 'click', function () {
-          window.location.href = `/tourist/touristDetail/${spot.id}`;
-        });
-
-        kakao.maps.event.addListener(marker, 'mouseover', function () {
-          infowindow.open(map, marker);
-        });
-        kakao.maps.event.addListener(marker, 'mouseout', function () {
-          infowindow.close();
-        });
-
-        markers.push(marker);
-      }
     });
-  });
 }
