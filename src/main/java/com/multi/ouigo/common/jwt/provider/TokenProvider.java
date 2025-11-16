@@ -2,6 +2,7 @@ package com.multi.ouigo.common.jwt.provider;
 
 import com.multi.ouigo.common.exception.custom.TokenException;
 import com.multi.ouigo.domain.auth.dto.CustomUser;
+import com.multi.ouigo.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -32,7 +33,7 @@ public class TokenProvider {
 
 
     private static final String AUTHORITIES_KEY = "auth";  // 클레임에서 권한정보담을키
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 10;     //3분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 10 * 10;     //3분
     private static final long REFRESH_TOKEN_EXPIRE_TIME =
         1000L * 60 * 60 * 24 * 30; //1000L * 60 * 60 * 24 * 1;  // 1일
 
@@ -40,22 +41,26 @@ public class TokenProvider {
     private final Key SKEY;
     private final String ISSUER;
     private final RedisTemplate<String, String> redisTemplate;
+    private final MemberRepository memberRepository;
 
     //application.yml 에 정의해놓은 jwt.secret 값을 가져와서 JWT 를 만들 때 사용하는 암호화 키값을 생성
-    public TokenProvider(JwtProvider jwtProvider, RedisTemplate<String, String> redisTemplate) {
+    public TokenProvider(JwtProvider jwtProvider, RedisTemplate<String, String> redisTemplate,
+        MemberRepository memberRepository) {
         this.jwtProvider = jwtProvider;
         SKEY = jwtProvider.getSecretKey();
         ISSUER = jwtProvider.getIssuer();
         this.redisTemplate = redisTemplate;
+        this.memberRepository = memberRepository;
         System.out.println("TokenProvider-------------" + SKEY);
         System.out.println("   ISSUER     -------------" + ISSUER);
 
     }
 
-    public String generateToken(String memberId, List<String> roles, String code) {
+    public String generateToken(String memberId, List<String> roles, String code, Long memberNo) {
         Claims claims = Jwts
             .claims()
             .setSubject(memberId);
+        claims.put("memberNo", memberNo);
         long now = (new Date()).getTime();
         Date tokenExpiresIn = new Date();
         if (code.equals("A")) {
@@ -82,7 +87,7 @@ public class TokenProvider {
                 Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME)
             );
             log.info("[TokenProvider] Redis에 리프레시 토큰 저장 완료: memberId={}, TTL={}분",
-                memberId, REFRESH_TOKEN_EXPIRE_TIME);
+                memberId, REFRESH_TOKEN_EXPIRE_TIME / 60000);
         }
 
         return token;
@@ -157,6 +162,16 @@ public class TokenProvider {
         return Jwts.parserBuilder().setSigningKey(SKEY).build().parseClaimsJws(token).getBody()
             .getSubject();
     }
+
+    public Long getMemberNo(String token) {
+        Claims claims = Jwts.parserBuilder()
+            .setSigningKey(SKEY)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+        return claims.get("memberNo", Long.class);
+    }
+
 
     public String resolveToken(String token) {
         // Bearer 접두어가 있는 경우 제거하고 순수한 토큰 반환

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>알림</title>
+
+  <link rel="stylesheet" th:href="@{/css/navbar.css}">
+  <link rel="stylesheet" th:href="@{/css/notification-list.css}">
+
+</head>
+
+<body>
+
+<!-- 네비바 -->
+<div th:replace="~{navbar :: navbar}"></div>
+
+<main class="notification-container">
+  <h2 class="noti-title">알림</h2>
+
+  <table class="noti-table">
+    <thead>
+    <tr>
+      <th>번호</th>
+      <th>알림 내용</th>
+      <th>타입</th>
+      <th>확인</th>
+    </tr>
+    </thead>
+    <tbody id="notiListBody">
+    <tr>
+      <td colspan="4" class="empty">알림을 불러오는 중...</td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+
+<script th:src="@{/js/api.js}" defer></script>
+<script th:src="@{/js/notification-list.js}" defer></script>
+
+</body>
+</html>

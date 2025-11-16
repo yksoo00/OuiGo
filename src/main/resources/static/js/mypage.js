@@ -46,7 +46,7 @@ async function apiFetch(url, options = {}) {
     }
 
     alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-    window.location.href = "/loginFrom";
+
     return;
   }
 
@@ -109,7 +109,8 @@ async function loadProfileView() {
   document.getElementById("genderView").textContent = p.gender === "M" ? "남성"
       : "여성";
   document.getElementById("emailView").textContent = p.email;
-  document.getElementById("introView").textContent = p.introduction ? p.introduction : "자기소개를 입력해주세요.";
+  document.getElementById("introView").textContent = p.introduction
+      ? p.introduction : "자기소개를 입력해주세요.";
 }
 
 // ==================== 프로필 수정 화면 ====================
@@ -175,21 +176,29 @@ async function submitProfileEdit() {
   };
 
   // 유효성 검증
-    const errors = [];
+  const errors = [];
 
-    if (!dto.nickName) errors.push("닉네임은 필수 입력 사항입니다.");
-    else if (dto.nickName.length > 6) errors.push("닉네임은 최대 6자여야 합니다.");
+  if (!dto.nickName) {
+    errors.push("닉네임은 필수 입력 사항입니다.");
+  } else if (dto.nickName.length > 6) {
+    errors.push("닉네임은 최대 6자여야 합니다.");
+  }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!dto.email) errors.push("이메일은 필수 입력 사항입니다.");
-    else if (!emailRegex.test(dto.email)) errors.push("이메일 형식이 올바르지 않습니다.");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!dto.email) {
+    errors.push("이메일은 필수 입력 사항입니다.");
+  } else if (!emailRegex.test(dto.email)) {
+    errors.push("이메일 형식이 올바르지 않습니다.");
+  }
 
-    if (dto.introduction.length > 150) errors.push("자기소개는 150자 이내로 작성해주세요.");
+  if (dto.introduction.length > 150) {
+    errors.push("자기소개는 150자 이내로 작성해주세요.");
+  }
 
-    if (errors.length > 0) {
-        alert(errors.join("\n"));
-        return;
-    }
+  if (errors.length > 0) {
+    alert(errors.join("\n"));
+    return;
+  }
 
   const res = await apiFetch(`/api/v1/myPage`, {
     method: "PUT",
@@ -209,51 +218,48 @@ async function submitProfileEdit() {
 window.goEdit = () => loadLeftView("edit");
 window.cancelEdit = () => loadLeftView("view");
 
-
-
 // 닉네임 실시간 검증
 function validateNickName() {
-    const nickName = document.getElementById('nickNameInput').value;
-    const errorSpan = document.getElementById('nickNameError');
+  const nickName = document.getElementById('nickNameInput').value;
+  const errorSpan = document.getElementById('nickNameError');
 
-    errorSpan.textContent = '';
-    errorSpan.style.display = 'none';
+  errorSpan.textContent = '';
+  errorSpan.style.display = 'none';
 
-    if (nickName.length > 6) {
-        errorSpan.textContent = '닉네임은 최대 6자여야 합니다.';
-        errorSpan.style.display = 'block';
-    }
+  if (nickName.length > 6) {
+    errorSpan.textContent = '닉네임은 최대 6자여야 합니다.';
+    errorSpan.style.display = 'block';
+  }
 }
 
 // 이메일 실시간 검증
 function validateEmail() {
-    const email = document.getElementById('emailInput').value;
-    const errorSpan = document.getElementById('emailError');
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const email = document.getElementById('emailInput').value;
+  const errorSpan = document.getElementById('emailError');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    errorSpan.textContent = '';
-    errorSpan.style.display = 'none';
+  errorSpan.textContent = '';
+  errorSpan.style.display = 'none';
 
-    if (email && !emailRegex.test(email)) {
-        errorSpan.textContent = '이메일 형식이 올바르지 않습니다.';
-        errorSpan.style.display = 'block';
-    }
+  if (email && !emailRegex.test(email)) {
+    errorSpan.textContent = '이메일 형식이 올바르지 않습니다.';
+    errorSpan.style.display = 'block';
+  }
 }
 
 // 자기소개 실시간 검증
 function validateIntroduction() {
-    const introduction = document.getElementById('introInput').value;
-    const errorSpan = document.getElementById('introError');
+  const introduction = document.getElementById('introInput').value;
+  const errorSpan = document.getElementById('introError');
 
-    errorSpan.textContent = '';
-    errorSpan.style.display = 'none';
+  errorSpan.textContent = '';
+  errorSpan.style.display = 'none';
 
-    if (introduction.length > 150) {
-        errorSpan.textContent = '자기소개는 150자 이내로 작성해주세요.';
-        errorSpan.style.display = 'block';
-    }
+  if (introduction.length > 150) {
+    errorSpan.textContent = '자기소개는 150자 이내로 작성해주세요.';
+    errorSpan.style.display = 'block';
+  }
 }
-
 
 // ==================== Trip Card ====================
 async function loadTripCard() {
@@ -308,7 +314,8 @@ function displayTrips(trips) {
                         <div class="trip-budget">${formatBudget(t.budget)}</div>
                     </div>
                     <div class="trip-info-row">
-                        <div class="trip-memo">${t.memo ? t.memo : "메모를 입력해주세요."}</div>
+                        <div class="trip-memo">${t.memo ? t.memo
+        : "메모를 입력해주세요."}</div>
                     </div>
                     <div class="trip-actions">
                         <button class="btn-edit" onclick="editTrip(${t.id})">수정</button>

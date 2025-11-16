@@ -37,7 +37,8 @@ public class PathController {
 
 
     @GetMapping("/tourist/touristDetail/{touristId}")
-    public String TouristDetailPage(@PathVariable Long touristId, Model model, HttpServletRequest request) {
+    public String TouristDetailPage(@PathVariable Long touristId, Model model,
+        HttpServletRequest request) {
         model.addAttribute("touristSpotId", touristId);
         model.addAttribute("pageName", "touristDetail");
         model.addAttribute("pageFragment", "tourist/touristDetail");
@@ -178,5 +179,11 @@ public class PathController {
     public String tripEdit(@PathVariable Long tripId, Model model) {
         model.addAttribute("tripId", tripId);
         return "mypage/tripEdit :: tripEdit";
+    }
+
+    @GetMapping("/notification/notificationListPage")
+    public String notificationPage() {
+
+        return "notification/notificationListPage";
     }
 }

@@ -42,8 +42,11 @@ public class JwtConfig {
             ).authorizeHttpRequests(auth -> auth
                 .requestMatchers("/myPage/**", "/loginForm/**", "/fragments/profile-view/**")
                 .permitAll()
-                .requestMatchers("/auth/*", "/recruit/**", "/layout/**", "/tourist/**", "/navbar/**")
+                .requestMatchers("/auth/*", "/recruit/**", "/layout/**", "/tourist/**", "/navbar/**",
+                    "/notification/**")
                 .permitAll()
+                .requestMatchers("/api/v1/notifications/connect").permitAll()
+
                 .requestMatchers("/uploads/**", "/css/**", "/js/**", "/images/**", "/fonts/**",
                     "/static/**", "/images/**")
                 .permitAll()

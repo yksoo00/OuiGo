@@ -1,0 +1,96 @@
+.notification-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.noti-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #00BFFF;
+  border-left: 6px solid #00BFFF;
+  padding-left: 12px;
+  margin-bottom: 20px;
+}
+
+/* 테이블 스타일 */
+.noti-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #cbe9ff;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 16px;
+}
+
+.noti-table th,
+.noti-table td {
+  border: 1px solid #d6f0ff;
+  padding: 14px;
+  text-align: center;
+}
+
+.noti-table th {
+  background-color: #f3fbff;
+  font-weight: 700;
+}
+
+.noti-table tr:nth-child(even) {
+  background-color: #fafcff;
+}
+
+/* 빈 데이터 */
+.empty {
+  padding: 40px 0;
+  text-align: center;
+  color: #999;
+}
+
+/* 확인 버튼 */
+.check-btn {
+  padding: 6px 12px;
+  background-color: #00BFFF;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.check-btn:hover {
+  opacity: 0.85;
+}
+
+/* 테이블 행 hover */
+.noti-row:hover {
+  background-color: #eaf7ff;
+  cursor: pointer;
+}
+
+/* 타입 표시 태그 */
+.type-tag {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+}
+
+.type-tag.COMMENT {
+  background-color: #00BFFF;
+}
+
+.type-tag.POSTLIKE {
+  background-color: #54c000;
+}
+
+.type-tag.QUESTION {
+  background-color: #ff6b6b;
+}
+
+.type-tag.RECRUIT_UPDATED {
+  background-color: #FFC107;
+  color: #333;
+}

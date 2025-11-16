@@ -1,3 +1,8 @@
+document.querySelector(".noti-btn").addEventListener("click", () => {
+  const dropdown = document.querySelector(".noti-dropdown");
+  dropdown.style.display = dropdown.style.display === "block" ? "none"
+      : "block";
+});
 document.addEventListener("DOMContentLoaded", async () => {
   const authArea = document.getElementById("authArea");
   const token = localStorage.getItem("accessToken");

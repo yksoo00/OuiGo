@@ -1,0 +1,89 @@
+.live-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffffff;
+  padding: 14px 18px;
+  border-left: 5px solid #00BFFF;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 99999;
+  font-size: 14px;
+  color: #333;
+  animation: fadeSlideIn 0.3s ease-out;
+  cursor: pointer;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔔 드롭다운 리스트 */
+.noti-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 250px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: none;
+  z-index: 2000;
+}
+
+.noti-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.noti-item {
+  padding: 8px 5px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.noti-item:hover {
+  background: #f3f9ff;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔥 알림 뱃지 */
+.alert-badge {
+  background: #ff3b30;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -3px;
+  right: -3px;
+}

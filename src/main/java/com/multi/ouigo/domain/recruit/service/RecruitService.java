@@ -7,10 +7,11 @@ import com.multi.ouigo.common.jwt.provider.TokenProvider;
 import com.multi.ouigo.domain.approval.entity.Approval;
 import com.multi.ouigo.domain.approval.repository.ApprovalRepository;
 import com.multi.ouigo.domain.condition.entity.Condition;
-import com.multi.ouigo.domain.condition.mapper.ConditionRepository;
 import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.repository.MemRepository;
 import com.multi.ouigo.domain.member.repository.MemberRepository;
+import com.multi.ouigo.domain.notification.constant.NotificationType;
+import com.multi.ouigo.domain.notification.service.NotificationService;
 import com.multi.ouigo.domain.recruit.dto.req.CreateRecruitReqDto;
 import com.multi.ouigo.domain.recruit.dto.req.UpdateRecruitReqDto;
 import com.multi.ouigo.domain.recruit.dto.res.RecruitListResDto;
@@ -50,7 +51,7 @@ public class RecruitService {
 
     private final MemRepository memRepository;
 
-    private final ConditionRepository conditionRepository;
+    private final NotificationService notificationService;
 
     private final ApprovalRepository approvalRepository;
 
@@ -147,6 +148,17 @@ public class RecruitService {
 
         addConditions(recruit, updateRecruitReqDto.getAgeCodes());
 
+        recruit.getApprovals().forEach(approval -> {
+            Member applicant = approval.getMember(); // 신청자
+
+            notificationService.send(
+                applicant,                                      // 알림 받을 사람
+                NotificationType.UPDATE_RECRUIT,               // 알림 타입
+                "참여 중인 모집글이 수정되었습니다.",            // 알림 내용
+                "/recruit/" + recruitId                        // 이동 링크
+            );
+        });
+
         return recruit.getId();
     }
 
@@ -200,6 +212,21 @@ public class RecruitService {
 
         recruit.addApproval(approval);
 
+        Member receiver = recruit.getMember();
+
+        String message = member.getNickName()
+            + " 님이 [" + recruit.getTitle() + "] 모집글에 참여 신청했습니다.";
+
+        // 알림 클릭 시 이동할 URL
+        String url = "/recruit/" + recruitId;
+
+        // 2) SSE 실시간 전송
+        notificationService.send(
+            receiver,
+            NotificationType.UPDATE_RECRUIT,// memberId 또는 PK 형식에 맞게 조정
+            message,
+            url
+        );
     }
 
     public Page<RecruitListResDto> findAllRecruitByTouristSpotId(HttpServletRequest request,

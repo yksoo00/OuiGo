@@ -11,6 +11,8 @@ import com.multi.ouigo.domain.approval.mapper.ApprovalMapper;
 import com.multi.ouigo.domain.approval.repository.ApprovalRepository;
 import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.repository.MemberRepository;
+import com.multi.ouigo.domain.notification.constant.NotificationType;
+import com.multi.ouigo.domain.notification.service.NotificationService;
 import com.multi.ouigo.domain.recruit.entity.Recruit;
 import com.multi.ouigo.domain.recruit.repository.RecruitRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,8 @@ public class ApprovalService {
     private final ApprovalRepository approvalRepository;
     private final ApprovalMapper approvalMapper;
     private final RecruitRepository recruitRepository;
+    private final NotificationService notificationService;
+
 
     public Page<ApprovalMyRecruitResDto> findAllMyRecruitApproval(HttpServletRequest request,
         Pageable pageable) {
@@ -75,6 +79,7 @@ public class ApprovalService {
 
         if (!recruit.getMember().getNo().equals(member.getNo())) {
             throw new NotAuthorizedException("본인 모집글만 상태르 변경할 수 있습니다");
+
         }
 
         Approval approval = recruit.getApprovals().stream()
@@ -83,6 +88,13 @@ public class ApprovalService {
             .orElseThrow(() -> new NotFindException("신청자를 찾을 수 없습니다"));
 
         approval.setStatus(ApprovalStatus.APPROVED);
+
+        notificationService.send(
+            approval.getMember(),                     // 알림 받을 사람 = 신청자
+            NotificationType.PARTICIPATION,                // 알림 타입
+            "신청하신 모집글이 승인되었습니다.",       // 내용
+            "/recruit/" + recruit.getId()            // 이동 URL
+        );
 
     }
 
@@ -106,6 +118,12 @@ public class ApprovalService {
             .orElseThrow(() -> new NotFindException("신청자를 찾을 수 없습니다"));
 
         approval.setStatus(ApprovalStatus.REJECTED);
+        notificationService.send(
+            approval.getMember(),
+            NotificationType.PARTICIPATION,
+            "신청하신 모집글이 거절되었습니다.",
+            "/recruit/" + recruit.getId()
+        );
     }
 
     @Transactional
@@ -117,10 +135,20 @@ public class ApprovalService {
         Approval approval = approvalRepository.findById(approvalId)
             .orElseThrow(() -> new NotFindException("신청 내역을 찾을 수 없습니다."));
 
+        Recruit recruit = recruitRepository.findById(approval.getRecruit().getId())
+            .orElseThrow(() -> new NotFindException("모집 글을 찾을 수 없습니다"));
+
         if (approval.getMember().getNo().equals(requester.getNo()) ||
             approval.getRecruit().getMember().getNo().equals(requester.getNo())) {
 
             approval.setDeleted(true);
+
+            notificationService.send(
+                approval.getMember(),
+                NotificationType.PARTICIPATION,
+                "신청 삭제되었습니다.",
+                "/recruit/" + recruit.getId()
+            );
         } else {
             throw new NotAuthorizedException("삭제 권한이 없습니다.");
         }

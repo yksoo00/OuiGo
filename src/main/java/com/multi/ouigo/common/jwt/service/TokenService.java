@@ -8,14 +8,17 @@ import com.multi.ouigo.domain.member.entity.Member;
 import com.multi.ouigo.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.util.*;
 
 @Service
 @Slf4j
@@ -33,6 +36,7 @@ public class TokenService {
         List<String> roles;
         String accessToken;
         String refreshToken;
+        Long memberNo;
 
         if (t instanceof String) {
             String jwt = tokenProvider.resolveToken((String) t);
@@ -50,6 +54,7 @@ public class TokenService {
             }
 
             Optional<Member> member = memberRepository.findByMemberId(memberId);
+            memberNo = member.get().getNo();
             String role = member.get().getRole();
             roles = Arrays.asList(role.split(","));
 
@@ -58,21 +63,23 @@ public class TokenService {
 
             refreshToken = handleRefreshToken(memberId);
 
-            accessToken = createAccessToken(memberId, roles);
+            accessToken = createAccessToken(memberId, roles, memberNo);
             redisTemplate.opsForValue().set(memberId, refreshToken, Duration.ofMinutes(5));
 
             log.info("[TokenService] 리프레시 토큰 재발급 완료 - memberId: {}", memberId);
         } else if (t instanceof Map) {
             Map<String, Object> data = (Map<String, Object>) t;
-
             memberId = (String) data.get("memberId");
             roles = (List<String>) data.get("roles");
 
             log.info("Map MemberEmail >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", memberId);
             log.info("Map Roles >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {}", roles);
             refreshToken = handleRefreshToken(memberId);
+            Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new RuntimeException("회원 정보가 없습니다"));
+            memberNo = member.getNo();
 
-            accessToken = createAccessToken(memberId, roles);
+            accessToken = createAccessToken(memberId, roles, memberNo);
 
         } else {
             throw new IllegalArgumentException("Invalid token type !!");
@@ -86,7 +93,7 @@ public class TokenService {
     public String handleRefreshToken(String memberId) {
         redisTemplate.delete(memberId);
 
-        String newRefreshToken = createRefreshToken(memberId);
+        String newRefreshToken = createRefreshToken(memberId, 0L);
 
         redisTemplate.opsForValue().set(memberId, newRefreshToken, Duration.ofMinutes(5));
 
@@ -94,12 +101,12 @@ public class TokenService {
     }
 
 
-    private String createAccessToken(String memberId, List<String> roles) {
-        return tokenProvider.generateToken(memberId, roles, "A");
+    private String createAccessToken(String memberId, List<String> roles, Long memberNo) {
+        return tokenProvider.generateToken(memberId, roles, "A", memberNo);
     }
 
-    private String createRefreshToken(String memberId) {
-        return tokenProvider.generateToken(memberId, null, "R");
+    private String createRefreshToken(String memberId, Long memberNo) {
+        return tokenProvider.generateToken(memberId, null, "R", memberNo);
     }
 
     public void deleteRefreshToken(String accessToken) {
@@ -139,8 +146,9 @@ public class TokenService {
     public String getMemberIdFromAccessToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
 
-        if (bearer == null || !bearer.startsWith("Bearer "))
+        if (bearer == null || !bearer.startsWith("Bearer ")) {
             throw new TokenException("Authorization 헤더 없음");
+        }
 
         String token = tokenProvider.resolveToken(bearer);
 

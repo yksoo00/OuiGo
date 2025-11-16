@@ -1,6 +1,9 @@
 server:
   port: ${PORT}
 spring:
+  datasource:
+    hikari:
+      leakDetectionThreshold: 2000  # 2초 넘게 커넥션 안 닫으면 로그 출력
   profiles:
     active: local
   data:
