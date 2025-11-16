@@ -1,6 +1,4 @@
-// =====================================================
-// 🚀 1) 전역 변수 선언 (중복 금지)
-// =====================================================
+
 let touristId = null;
 let reviewListContainer = null;
 let paginationContainer = null;
@@ -28,8 +26,18 @@ document.addEventListener("DOMContentLoaded", async() => {
         console.error("❌ touristId가 존재하지 않습니다.");
         return;
     }
+    const userRole = localStorage.getItem('memberId');
+    console.log("현재 사용자 역할(memberId):", userRole);
 
-    // 2. 서버에서 주입받는 대신, API로 직접 사용자 ID를 가져옵니다.
+    if (userRole && userRole.includes('admin')) {
+
+        const adminButtonsContainer = document.getElementById('spot-admin-buttons');
+
+        if (adminButtonsContainer) {
+            adminButtonsContainer.style.display = 'flex';
+            console.log("관리자 버튼을 표시합니다.");
+        }
+    }
     try {
         const userId = await getCurrentMemberId(); //
         if (userId) {
@@ -44,17 +52,19 @@ document.addEventListener("DOMContentLoaded", async() => {
         currentMemberId = '';
     }
 
+    fetchDetails(touristId);
+    fetchReviewsAndRender(0);
+    // 2. 서버에서 주입받는 대신, API로 직접 사용자 ID를 가져옵니다.
+
     // 상세 + 리뷰 로드
     fetchDetails(touristId);
     fetchReviewsAndRender(0);
 
-    // 버튼 이벤트 연결
-    setupButtonListeners();
+  // 버튼 이벤트 연결
+  setupButtonListeners();
 });
 
-// =====================================================
-// 🚀 3) 리뷰 목록 가져오기 + 렌더링
-// =====================================================
+
 async function fetchReviewsAndRender(page = 0) {
     if (!touristId) {
         return;
@@ -91,9 +101,7 @@ async function fetchReviewsAndRender(page = 0) {
     }
 }
 
-// =====================================================
-// 🚀 4) 리뷰 렌더링
-// =====================================================
+
 function renderReviews(reviews) {
     reviewListContainer.innerHTML = '';
 
@@ -274,9 +282,7 @@ function setupPaginationListeners() {
     });
 }
 
-// =====================================================
-// 🚀 6) 리뷰 수정 / 취소 / 저장 / 삭제
-// =====================================================
+
 function handleReviewEdit(id) {
     const item = document.querySelector(`.review-item[data-review-id="${id}"]`);
     item.querySelector('.review-content-display').style.display = 'none';
@@ -334,7 +340,7 @@ async function handleReviewDelete(id) {
 // =====================================================
 async function fetchDetails(id) {
     try {
-        const res = await fetch(`/api/v1/tourist-spots/${id}`);
+        const res = await apiFetch(`/api/v1/tourist-spots/${id}`);
 
         if (!res.ok) {
             throw new Error("상세정보 호출 실패");
@@ -349,12 +355,13 @@ async function fetchDetails(id) {
 
         // 이미지 검색 키워드 정제
         let keyword = spot.title.replace(/해양광장|광장/g, '').trim();
-
+        const mainImageContainer = document.querySelector('.image-slider-container');
         const mainImage = await fetchImages(keyword);
 
         if (mainImage) {
-            document.querySelector('.image-slider-container').innerHTML =
+            mainImageContainer.innerHTML =
                 `<img src="${mainImage}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
+            mainImageContainer.style.display = 'block';
         }
 
         // 지도 이동
@@ -387,7 +394,7 @@ async function fetchImages(keyword) {
     status.textContent = '이미지 로딩 중...';
 
     try {
-        const res = await fetch(
+        const res = await apiFetch(
             `/api/v1/tourist-spots/images?keyword=${encodeURIComponent(keyword)}`);
 
         if (!res.ok) {
@@ -426,9 +433,6 @@ async function fetchImages(keyword) {
     }
 }
 
-// =====================================================
-// 🚀 9) 수정 / 삭제 버튼 리스너 연결
-// =====================================================
 function setupButtonListeners() {
     document.querySelector('.btn-spot-edit')?.addEventListener('click', () => {
         window.location.href = `/tourist/touristUpdatePage?id=${touristId}`;
@@ -502,7 +506,7 @@ async function getCurrentMemberId() {
 
     if (!token) return null;
 
-    const res = await fetch("/auth/me", {
+    const res = await apiFetch("/auth/me", {
         headers: {
             "Authorization": `Bearer ${token}`
         }
