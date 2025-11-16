@@ -65,3 +65,25 @@ body, html {
 #keyword-search-btn {
     cursor: pointer;
 }
+
+.tourist-overlay {
+    padding: 10px 16px;
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #00BFFF;
+    font-weight: 700;
+    color: #333;
+    font-size: 16px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    white-space: nowrap;
+
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.15s ease-out;
+}
+
+.tourist-overlay.show {
+    opacity: 1;
+    transform: translateY(0);
+}

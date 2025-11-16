@@ -5,7 +5,13 @@ let paginationContainer = null;
 
 const DEFAULT_PROFILE_IMG = '/img/default-avatar.png';
 
-document.addEventListener("DOMContentLoaded", () => {
+let currentMemberId = null;
+
+
+// =====================================================
+// 🚀 2) DOMContentLoaded — touristId 주입 및 초기화
+// =====================================================
+document.addEventListener("DOMContentLoaded", async() => {
 
     const container = document.getElementById('touristDetailContainer');
     touristId = container?.dataset.touristId ?? null;
@@ -32,12 +38,30 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("관리자 버튼을 표시합니다.");
         }
     }
+    try {
+        const userId = await getCurrentMemberId(); //
+        if (userId) {
+            currentMemberId = String(userId).trim();
+            console.log("🔥 currentMemberId (API 응답):", currentMemberId);
+        } else {
+            currentMemberId = '';
+            console.log("🔥 currentMemberId (API 응답):", "NULL (비로그인)");
+        }
+    } catch (error) {
+        console.warn("사용자 ID 로드 실패 (비로그인 상태일 수 있음):", error);
+        currentMemberId = '';
+    }
 
     fetchDetails(touristId);
     fetchReviewsAndRender(0);
+    // 2. 서버에서 주입받는 대신, API로 직접 사용자 ID를 가져옵니다.
 
+    // 상세 + 리뷰 로드
+    fetchDetails(touristId);
+    fetchReviewsAndRender(0);
 
-    setupButtonListeners();
+  // 버튼 이벤트 연결
+  setupButtonListeners();
 });
 
 
@@ -89,6 +113,18 @@ function renderReviews(reviews) {
 
     reviews.forEach(review => {
 
+        // ReviewResDTO에서 받은 memberId를 문자열로 변환하고 공백 제거
+        const reviewAuthorId = String(review.memberId || '').trim();
+
+        // 전역 변수 currentMemberId를 사용하고 공백 제거 (안전 확보)
+        const currentUserId = String(currentMemberId || '').trim();
+
+        // 두 값이 일치하고, 현재 사용자 ID가 비어있지 않은지 확인
+        const isAuthor = currentUserId.length > 0 && reviewAuthorId === currentUserId;
+
+        // 💡 디버깅 로그: 이 로그를 꼭 확인해 주세요!
+        console.log(`Review ID: ${review.id}, Author ID: [${reviewAuthorId}], Current User ID: [${currentUserId}], Is Author: ${isAuthor}`);
+
         const isModified = review.updatedAt && review.updatedAt
             !== review.createdAt;
         const dateSource = isModified ? review.updatedAt : review.createdAt;
@@ -103,7 +139,14 @@ function renderReviews(reviews) {
         const modifiedBadge = isModified
             ? ' <span class="review-modified-badge">(수정됨)</span>' : '';
 
-        const profileImg = review.profileImgUrl || DEFAULT_PROFILE_IMG;
+        const profileImg = review.profImg || DEFAULT_PROFILE_IMG;
+
+        const actionsHtml = isAuthor ? `
+          <div class="review-actions">
+            <button class="btn-review-edit" onclick="handleReviewEdit(${review.id})">수정</button>
+            <button class="btn-review-delete" onclick="handleReviewDelete(${review.id})">삭제</button>
+          </div>
+        ` : `<div class="review-actions"></div>`;
 
         const html = `
       <div class="review-item" data-review-id="${review.id}">
@@ -115,10 +158,7 @@ function renderReviews(reviews) {
               <p class="review-date">${formatted}${modifiedBadge}</p>
             </div>
           </div>
-          <div class="review-actions">
-            <button class="btn-review-edit" onclick="handleReviewEdit(${review.id})">수정</button>
-            <button class="btn-review-delete" onclick="handleReviewDelete(${review.id})">삭제</button>
-          </div>
+          ${actionsHtml}
         </div>
 
         <p class="review-content-display">${review.content}</p>
@@ -137,57 +177,109 @@ function renderReviews(reviews) {
     });
 }
 
+// =====================================================
+// 🚀 5) 리뷰 페이지네이션
+// =====================================================
+function renderPagination(pagination) {
+    // pagination 객체에서 currentPage와 totalPages를 추출
+    const {currentPage, totalPages} = pagination; // currentPage는 1-index
 
-function renderPagination(totalPages, current) {
     paginationContainer.innerHTML = '';
     if (totalPages <= 1) {
         return;
     }
 
-    const createBtn = (label, pageIndex, disabled = false, active = false) => {
-        const btn = document.createElement('button');
-        btn.className = 'page-btn';
-        btn.textContent = label;
+    const PAGE_GROUP_SIZE = 5; // 한 번에 표시할 페이지 버튼 수
+    // 1-index인 currentPage를 기준으로 그룹 시작 페이지를 계산
+    const currentGroup = Math.ceil(currentPage / PAGE_GROUP_SIZE);
+    const startPage = (currentGroup - 1) * PAGE_GROUP_SIZE + 1; // 1, 6, 11, ...
+    const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages); // 5, 10, 15, ... 또는 totalPages
 
-        if (disabled) {
-            btn.classList.add('disabled');
-        }
-        if (active) {
-            btn.classList.add('active');
-        }
-        btn.disabled = disabled;
+    /**
+     * 페이지 링크 HTML 요소를 생성하는 헬퍼 함수
+     * @param {string} label - 버튼에 표시될 텍스트
+     * @param {number} targetPage - 실제로 이동할 페이지 번호 (1-index)
+     * @param {boolean} isDisabled - 비활성화 여부
+     * @param {boolean} isActive - 활성화(현재 페이지) 여부
+     * @param {string} actionType - 'page', 'prev-group', 'next-group' 중 하나
+     */
+    const createPageLinkHtml = (label, targetPage, isDisabled, isActive, actionType = 'page') => {
+        const activeClass = isActive ? ' active' : '';
+        const disabledStyle = isDisabled ? ' style="opacity: 0.5; pointer-events: none;"' : '';
+        const targetAttr = `data-${actionType === 'page' ? 'page' : 'target-page'}="${targetPage}"`;
+        const actionAttr = actionType !== 'page' ? `data-action="${actionType}"` : '';
 
-        btn.addEventListener('click', e => {
-            e.preventDefault();
-            if (!btn.disabled) {
-                loadRecruits(pageIndex);
-            }
-        });
-
-        return btn;
+        return `<span class="page-link${activeClass}" ${targetAttr} ${actionAttr} ${disabledStyle}>${label}</span>`;
     };
 
-    paginationContainer.appendChild(createBtn('«', 0, current === 0));
-    paginationContainer.appendChild(
-        createBtn('‹', Math.max(0, current - 1), current === 0));
+    // -------------------------------------------------------------
+    // 1. [« 처음] 버튼: 항상 1페이지(0-index: 0)로 이동
+    // -------------------------------------------------------------
+    const firstPageHtml = createPageLinkHtml('«', 1, currentPage === 1, false);
+    paginationContainer.insertAdjacentHTML('beforeend', firstPageHtml);
 
-    const maxButtons = 7;
-    let start = Math.max(0, current - Math.floor(maxButtons / 2));
-    let end = Math.min(totalPages - 1, start + maxButtons - 1);
+    // -------------------------------------------------------------
+    // 2. [< 이전] 그룹 버튼: 이전 그룹의 첫 페이지(startPage - 1)로 이동
+    // -------------------------------------------------------------
+    const prevGroupPage = startPage - 1;
+    const isPrevGroupDisabled = startPage === 1;
+    const prevGroupHtml = createPageLinkHtml('‹', prevGroupPage, isPrevGroupDisabled, false, 'prev-group');
+    paginationContainer.insertAdjacentHTML('beforeend', prevGroupHtml);
 
-    if (end - start < maxButtons - 1) {
-        start = Math.max(0, end - (maxButtons - 1));
+    // -------------------------------------------------------------
+    // 3. 페이지 번호 버튼: startPage 부터 endPage 까지 출력
+    // -------------------------------------------------------------
+    for (let i = startPage; i <= endPage; i++) {
+        const pageHtml = createPageLinkHtml(i, i, false, i === currentPage, 'page');
+        paginationContainer.insertAdjacentHTML('beforeend', pageHtml);
     }
 
-    for (let i = start; i <= end; i++) {
-        paginationContainer.appendChild(createBtn(i + 1, i, false, i === current));
-    }
+    // -------------------------------------------------------------
+    // 4. [다음 >] 그룹 버튼: 다음 그룹의 첫 페이지(endPage + 1)로 이동
+    // -------------------------------------------------------------
+    const nextGroupPage = endPage + 1;
+    const isNextGroupDisabled = endPage === totalPages;
+    const nextGroupHtml = createPageLinkHtml('›', nextGroupPage, isNextGroupDisabled, false, 'next-group');
+    paginationContainer.insertAdjacentHTML('beforeend', nextGroupHtml);
 
-    paginationContainer.appendChild(
-        createBtn('›', Math.min(totalPages - 1, current + 1),
-            current === totalPages - 1));
-    paginationContainer.appendChild(
-        createBtn('»', totalPages - 1, current === totalPages - 1));
+    // -------------------------------------------------------------
+    // 5. [마지막 »] 버튼: 항상 totalPages로 이동
+    // -------------------------------------------------------------
+    const lastPageHtml = createPageLinkHtml('»', totalPages, currentPage === totalPages, false);
+    paginationContainer.insertAdjacentHTML('beforeend', lastPageHtml);
+
+    // 새로 생성된 요소에 이벤트 리스너 연결
+    setupPaginationListeners();
+}
+
+/**
+ * 페이지네이션 링크에 이벤트 리스너를 연결하는 함수
+ */
+function setupPaginationListeners() {
+    // 모든 .page-link 요소에 리스너 연결
+    paginationContainer.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', (event) => {
+            const link = event.currentTarget; // 클릭된 요소 자체
+
+            // 1. 그룹 이동 버튼 처리 (이전 그룹, 다음 그룹)
+            const action = link.dataset.action;
+            if (action === 'prev-group' || action === 'next-group') {
+                const targetPage = parseInt(link.dataset.targetPage);
+                // Spring Pageable은 0-index이므로 1을 빼서 전달
+                if (!isNaN(targetPage) && targetPage >= 1) {
+                    fetchReviewsAndRender(targetPage - 1);
+                }
+            }
+            // 2. 개별 페이지 번호 또는 처음/마지막 버튼 처리
+            else {
+                const pageNumber = parseInt(link.dataset.page); // 1-index
+                // Spring Pageable은 0-index이므로 1을 빼서 전달
+                if (!isNaN(pageNumber) && pageNumber >= 1) {
+                    fetchReviewsAndRender(pageNumber - 1);
+                }
+            }
+        });
+    });
 }
 
 
@@ -243,9 +335,12 @@ async function handleReviewDelete(id) {
     }
 }
 
+// =====================================================
+// 🚀 7) 관광지 상세 + 이미지 로드
+// =====================================================
 async function fetchDetails(id) {
     try {
-        const res = await fetch(`/api/v1/tourist-spots/${id}`);
+        const res = await apiFetch(`/api/v1/tourist-spots/${id}`);
 
         if (!res.ok) {
             throw new Error("상세정보 호출 실패");
@@ -288,6 +383,9 @@ async function fetchDetails(id) {
     }
 }
 
+// =====================================================
+// 🚀 8) 관광지 이미지 API
+// =====================================================
 async function fetchImages(keyword) {
     const gallery = document.querySelector('.gallery-images');
     const status = document.getElementById('image-loading-status');
@@ -296,7 +394,7 @@ async function fetchImages(keyword) {
     status.textContent = '이미지 로딩 중...';
 
     try {
-        const res = await fetch(
+        const res = await apiFetch(
             `/api/v1/tourist-spots/images?keyword=${encodeURIComponent(keyword)}`);
 
         if (!res.ok) {
@@ -359,7 +457,9 @@ function setupButtonListeners() {
         });
 }
 
-
+// ===============================
+// 🔵 리뷰 작성 이벤트 등록
+// ===============================
 document.getElementById('submit-review-btn')?.addEventListener('click',
     async function () {
         const content = document.getElementById('review-content').value.trim();
@@ -370,7 +470,7 @@ document.getElementById('submit-review-btn')?.addEventListener('click',
         }
 
         try {
-            const memberNo = 1;
+            const memberNo = 1; // 🔥 실제 로그인 사용자 번호로 교체해야 함
             const url = `/api/v1/reviews/${touristId}`;
 
             // 🔥 apiFetch 사용 (토큰 자동 포함됨)
@@ -399,3 +499,19 @@ document.getElementById('submit-review-btn')?.addEventListener('click',
             alert(`리뷰 작성 실패: ${err.message}`);
         }
     });
+
+
+async function getCurrentMemberId() {
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) return null;
+
+    const res = await apiFetch("/auth/me", {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await res.json();
+    return data.data; // memberId 가 들어있음
+}
