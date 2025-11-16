@@ -1,0 +1,37 @@
+<div th:fragment="recruitContent">
+  <div class="recruit-page">
+    <div class="recruit-header">
+      <h1 class="recruit-title">모집 글</h1>
+      <a class="btn-create-link" href="/recruit/recruitCreatePage"
+         onclick="event.stopPropagation();">작성하기</a>
+    </div>
+
+    <!-- Filters (버튼 없음 — 변경시 즉시 호출) -->
+    <div class="filter-tabs" style="align-items:center;">
+      <input type="date" id="startDate" class="date-input" placeholder="시작일">
+      <input type="date" id="endDate" class="date-input" placeholder="도착일">
+      <select id="category" class="date-input">
+        <option value="">전체</option>
+        <option value="부분 동행">부분 동행</option>
+        <option value="투어 동행">투어 동행</option>
+        <option value="식사 동행">식사 동행</option>
+      </select>
+    </div>
+
+    <!-- Recruit List: JS에서 .recruit-list 내부에 카드들 생성 -->
+    <div class="recruit-list" id="recruitList">
+      <!-- 초기 서버 렌더링(옵션) 또는 JS가 채움 -->
+      <!-- 예시 초기 상태 (optional) -->
+      <div class="empty-state" id="initialEmpty">
+        <div class="empty-state-icon">🔎</div>
+        <div class="empty-state-text">필터를 선택하거나 페이지를 로드하세요.</div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- 스크립트 로드: recruit-list.js 를 static/js/ 에 넣어야 함 -->
+<script th:src="@{/js/recruit-list.js}"></script>
