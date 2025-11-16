@@ -20,4 +20,5 @@ public class TripListResDto {
     private Integer duration;
     private Integer budget;
     private String dDay;
+    private String memo;
 }
