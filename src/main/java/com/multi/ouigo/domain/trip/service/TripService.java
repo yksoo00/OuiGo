@@ -98,6 +98,7 @@ public class TripService {
                     .duration(dto.getDuration())
                     .budget(dto.getBudget())
                     .dDay(formattedDDay)
+                    .memo(dto.getMemo())
                     .build();
             })
             .collect(Collectors.toList());

@@ -109,8 +109,7 @@ async function loadProfileView() {
   document.getElementById("genderView").textContent = p.gender === "M" ? "남성"
       : "여성";
   document.getElementById("emailView").textContent = p.email;
-  document.getElementById("introView").textContent = p.introduction
-      ?? "자기소개가 없습니다.";
+  document.getElementById("introView").textContent = p.introduction ? p.introduction : "자기소개를 입력해주세요.";
 }
 
 // ==================== 프로필 수정 화면 ====================
@@ -175,6 +174,23 @@ async function submitProfileEdit() {
     profileImage: finalImageUrl
   };
 
+  // 유효성 검증
+    const errors = [];
+
+    if (!dto.nickName) errors.push("닉네임은 필수 입력 사항입니다.");
+    else if (dto.nickName.length > 6) errors.push("닉네임은 최대 6자여야 합니다.");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!dto.email) errors.push("이메일은 필수 입력 사항입니다.");
+    else if (!emailRegex.test(dto.email)) errors.push("이메일 형식이 올바르지 않습니다.");
+
+    if (dto.introduction.length > 150) errors.push("자기소개는 150자 이내로 작성해주세요.");
+
+    if (errors.length > 0) {
+        alert(errors.join("\n"));
+        return;
+    }
+
   const res = await apiFetch(`/api/v1/myPage`, {
     method: "PUT",
     body: JSON.stringify(dto)
@@ -186,12 +202,58 @@ async function submitProfileEdit() {
     alert("프로필 수정 완료!");
     loadLeftView("view");
   } else {
-    alert("수정 실패: " + data.message);
+    alert("프로필 수정 실패: " + data.message);
   }
 }
 
 window.goEdit = () => loadLeftView("edit");
 window.cancelEdit = () => loadLeftView("view");
+
+
+
+// 닉네임 실시간 검증
+function validateNickName() {
+    const nickName = document.getElementById('nickNameInput').value;
+    const errorSpan = document.getElementById('nickNameError');
+
+    errorSpan.textContent = '';
+    errorSpan.style.display = 'none';
+
+    if (nickName.length > 6) {
+        errorSpan.textContent = '닉네임은 최대 6자여야 합니다.';
+        errorSpan.style.display = 'block';
+    }
+}
+
+// 이메일 실시간 검증
+function validateEmail() {
+    const email = document.getElementById('emailInput').value;
+    const errorSpan = document.getElementById('emailError');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    errorSpan.textContent = '';
+    errorSpan.style.display = 'none';
+
+    if (email && !emailRegex.test(email)) {
+        errorSpan.textContent = '이메일 형식이 올바르지 않습니다.';
+        errorSpan.style.display = 'block';
+    }
+}
+
+// 자기소개 실시간 검증
+function validateIntroduction() {
+    const introduction = document.getElementById('introInput').value;
+    const errorSpan = document.getElementById('introError');
+
+    errorSpan.textContent = '';
+    errorSpan.style.display = 'none';
+
+    if (introduction.length > 150) {
+        errorSpan.textContent = '자기소개는 150자 이내로 작성해주세요.';
+        errorSpan.style.display = 'block';
+    }
+}
+
 
 // ==================== Trip Card ====================
 async function loadTripCard() {
@@ -241,10 +303,12 @@ function displayTrips(trips) {
                     <div class="trip-dday ${getDdayClass(dDay)}">${dDay}</div>
                     <div class="trip-destination">${t.destination}</div>
                     <div class="trip-title">${t.title}</div>
-                    <div class="trip-dates">${t.startDate} ~ ${t.endDate}</div>
-                    <div class="trip-info-row">
-                        <div class="trip-duration">${t.duration}일</div>
+                    <div class="trip-dates">${t.startDate} ~ ${t.endDate}
+                        <span class="trip-duration">(${t.duration}일)</span>
                         <div class="trip-budget">${formatBudget(t.budget)}</div>
+                    </div>
+                    <div class="trip-info-row">
+                        <div class="trip-memo">${t.memo ? t.memo : "메모를 입력해주세요."}</div>
                     </div>
                     <div class="trip-actions">
                         <button class="btn-edit" onclick="editTrip(${t.id})">수정</button>
@@ -260,7 +324,7 @@ function displayEmptyTrips() {
   document.getElementById("tripList").innerHTML = `
         <div class="empty-state">
             <div class="empty-icon">✈️</div>
-            <div class="empty-text">아직 등록된 여행 일정이 없습니다.</div>
+            <div class="empty-text">아직 등록된 여행 일정이 없습니다. 여행 일정을 등록해주세요.</div>
         </div>
     `;
 }
@@ -297,7 +361,7 @@ function calculateDday(startDate) {
 
 // ==================== 여행 삭제 ====================
 async function deleteTrip(id) {
-  if (!confirm("삭제하시겠습니까?")) {
+  if (!confirm("이 여행 일정을 삭제하시겠습니까?")) {
     return;
   }
 
@@ -308,7 +372,7 @@ async function deleteTrip(id) {
   const data = await res.json();
 
   if (data.status === 200) {
-    alert("삭제되었습니다");
+    alert("여행 일정 삭제 완료!");
     loadTrips();
     loadTripCard();
   } else {
@@ -373,10 +437,10 @@ async function submitTrip(event) {
   const data = await res.json();
 
   if (data.status === 200) {
-    alert("수정 완료!");
+    alert("여행 일정 수정 완료!");
     window.location.href = "/myPage";
   } else {
-    alert("수정 실패: " + data.message);
+    alert("여행 일정 수정 실패: " + data.message);
   }
 }
 
@@ -410,10 +474,10 @@ async function submitTripCreate(event) {
   const data = await res.json();
 
   if (data.status === 200 || data.status === 201) {
-    alert("등록 완료!");
+    alert("여행 일정 등록 완료!");
     window.location.href = "/myPage";
   } else {
-    alert("등록 실패: " + data.message);
+    alert("여행 일정 등록 실패: " + data.message);
   }
 }
 
