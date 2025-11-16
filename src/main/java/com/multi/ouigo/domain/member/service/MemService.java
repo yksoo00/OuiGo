@@ -28,7 +28,6 @@ public class MemService {
 
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
-    private final MemRepository memRepository;
     private final MemMapper memMapper;
     @Value("${PROFILE_IMG}")
     private String profileimg;
@@ -80,7 +79,7 @@ public class MemService {
         // 파일명 생성 (중복 방지)
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String uniqueFilename = UUID.randomUUID().toString() + extension;
+        String uniqueFilename = UUID.randomUUID() + extension;
 
         // 파일 저장
         try {
