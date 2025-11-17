@@ -1,6 +1,8 @@
 package com.multi.ouigo.domain.tourist.dto.req;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @NoArgsConstructor
@@ -12,14 +14,25 @@ public class TouristSpotReqDto {
 
 
     private Long id;  // 수정 시 필요, 등록 시에는 null 가능
+
     @NotBlank(message = "지역명은 필수입니다.")
+    @Size(max = 255, message = "지역명은 255자 이하로 적어주세요.")
     private String district;
+
     @NotBlank(message = "관광지명은 필수입니다.")
+    @Size(max = 255, message = "관광지명은 255자 이하로 적어주세요.")
     private String title;
+
     @NotBlank(message = "관광지 설명은 필수입니다.")
+    @Size(max = 1000, message = "관광지설명은 255자 이하로 적어주세요.")
     private String description;
+
     @NotBlank(message = "관광지 주소는 필수입니다.")
+    @Size(max = 255, message = "관광지 주소는 255자 이하로 적어주세요.")
     private String address;
+
+    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$",
+            message = "전화번호 형식이 올바르지 않습니다. (예: 02-123-4567)")
     @NotBlank(message = "관광지 전화번호는 필수입니다.")
     private String phone;
 

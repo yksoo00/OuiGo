@@ -45,19 +45,19 @@
                 <div class="form-group">
                     <label for="district" class="form-label">지역</label>
                     <input type="text" id="district" name="district" class="form-control"
-                           placeholder="예: 수도권" required>
+                           placeholder="예: 수도권" required maxlength="255">
                 </div>
 
                 <div class="form-group">
                     <label for="title" class="form-label">관광지명</label>
                     <input type="text" id="title" name="title" class="form-control"
-                           placeholder="예: 경복궁" required>
+                           placeholder="예: 경복궁" required maxlength="255">
                 </div>
 
                 <div class="form-group">
                     <label for="description" class="form-label">설명</label>
                     <textarea id="description" name="description" class="form-control" rows="5"
-                              placeholder="이 관광지에 대한 간단한 설명을 적어주세요." required></textarea>
+                              placeholder="이 관광지에 대한 간단한 설명을 적어주세요." required maxlength="1000"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -74,7 +74,8 @@
                 <div class="form-group">
                     <label for="phone" class="form-label">전화번호</label>
                     <input type="text" id="phone" name="phone" class="form-control"
-                           placeholder="예: 02-123-4567" required>
+                           placeholder="예: 02-123-4567" required pattern="\d{2,3}-\d{3,4}-\d{4}"
+                           title="전화번호 형식이 올바르지 않습니다. (예: 02-123-4567)">
                 </div>
 
                 <div class="form-actions">
