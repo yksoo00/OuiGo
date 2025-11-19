@@ -122,7 +122,7 @@ public class ApprovalService {
             approval.getMember(),
             NotificationType.PARTICIPATION,
             "신청하신 모집글이 거절되었습니다.",
-            "/recruit/" + recruit.getId()
+            "/recruit/recruitApprovalPage"
         );
     }
 
@@ -144,11 +144,12 @@ public class ApprovalService {
             approval.setDeleted(true);
 
             notificationService.send(
-                approval.getMember(),
+                recruit.getMember(),
                 NotificationType.PARTICIPATION,
                 "신청 삭제되었습니다.",
-                "/recruit/" + recruit.getId()
+                "/recruit/recruitApprovalPage"
             );
+            
         } else {
             throw new NotAuthorizedException("삭제 권한이 없습니다.");
         }

@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   eventSource.onmessage = (event) => {
     console.log("SSE:", event.data);
-    showLivePopup("팝업 테스트!", "/");
     let response;
     try {
       response = JSON.parse(event.data);

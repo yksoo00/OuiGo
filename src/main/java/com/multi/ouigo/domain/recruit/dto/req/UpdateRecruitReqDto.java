@@ -2,9 +2,11 @@ package com.multi.ouigo.domain.recruit.dto.req;
 
 import com.multi.ouigo.domain.condition.constant.AgeCode;
 import com.multi.ouigo.domain.condition.constant.GenderCode;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,17 +30,19 @@ public class UpdateRecruitReqDto {
     private String recruitContent;
 
     @NotNull(message = "시작일은 필수입니다.")
+    @PastOrPresent(message = "시작일은 과거 또는 오늘만 가능합니다.")
     private LocalDate startDate;
-    
+
     @NotNull(message = "종료일은 필수입니다.")
+    @FutureOrPresent(message = "종료일은 오늘 또는 미래여야 합니다.")
     private LocalDate endDate;
 
-    @NotBlank(message = "카테고리는 필수입니다.")
+    @NotNull(message = "카테고리는 필수입니다.")
     private String recruitCategory;
-    @NotEmpty(message = "성별코드는 필수입니다.")
+    @NotEmpty(message = "성별 코드는 최소 1개 이상 선택해야 합니다.")
     private List<GenderCode> genderCodes;
 
-    @NotEmpty(message = "나이코드는 필수입니다.")
+    @NotEmpty(message = "나이대 코드는 최소 1개 이상 선택해야 합니다.")
     private List<AgeCode> ageCodes;
 
     @NotNull(message = "관광지 아이디는 필수입니다.")

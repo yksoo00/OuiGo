@@ -218,7 +218,7 @@ public class RecruitService {
             + " 님이 [" + recruit.getTitle() + "] 모집글에 참여 신청했습니다.";
 
         // 알림 클릭 시 이동할 URL
-        String url = "/recruit/" + recruitId;
+        String url = "/recruit/recruitApprovalPage";
 
         // 2) SSE 실시간 전송
         notificationService.send(

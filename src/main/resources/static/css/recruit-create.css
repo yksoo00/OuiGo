@@ -19,6 +19,15 @@
   outline: none;
 }
 
+.input-error {
+  border: 2px solid #ff4d4d !important;
+  animation: shake 0.15s ease-in-out 0s 2;
+}
+
+.input-success {
+  border: 2px solid #28c76f !important;
+}
+
 .input-textarea {
   resize: vertical;
   min-height: 160px;
@@ -45,4 +54,74 @@
 .checkbox-group input[type="checkbox"] {
   margin-right: 6px;
   accent-color: #00BFFF;
+}
+
+.error-message {
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+.box-error {
+  border: 2px solid #ff4d4d !important;
+  border-radius: 8px;
+  animation: shake 0.15s ease-in-out 2;
+}
+
+.box-success {
+  border: 2px solid #00c853 !important;
+  border-radius: 8px;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+.summary-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.date-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1; /* ⬅ 오른쪽 빈 공간 없이 꽉 채우는 핵심 */
+}
+
+.date-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* ⬅ input 크기 통일 */
+}
+
+.input-date {
+  width: 100%;
+}
+
+.error-message {
+  height: 16px;
+  font-size: 0.8rem;
+  color: #ff5555;
+  margin-top: 4px;
+}
+
+.tilde {
+  margin: 0 4px;
+  font-weight: bold;
 }

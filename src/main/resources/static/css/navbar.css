@@ -204,6 +204,16 @@
   background-color: #00BFFF;
 }
 
+.icon-btn,
+.noti-btn {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .navbar-container {

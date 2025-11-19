@@ -30,6 +30,45 @@
   width: 100%;
 }
 
+/* login__box 크기 고정 */
+.login__box {
+  box-sizing: border-box !important;
+}
+
+/* 에러 상태 */
+.box-error {
+  border: 2px solid #ff4d4d !important;
+  border-radius: 10px;
+  animation: shake 0.15s ease-in-out 2;
+  padding: 1rem !important;
+}
+
+/* 성공 상태 */
+.box-success {
+  border: 2px solid #00c853 !important;
+  border-radius: 10px;
+  padding: 1rem !important;
+}
+
+/* 흔들리는 효과 */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
 /* Check ID 버튼 */
 .id-check-container .id-check-btn {
   width: 100%;
@@ -197,6 +236,21 @@ img {
   border-radius: 0.5rem;
 }
 
+.input-error {
+  border: 2px solid #ff4d4d !important;
+}
+
+.input-success {
+  border: 2px solid #00bfff !important;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  min-height: 16px; /* 공간 유지 */
+}
+
 .login__icon {
   font-size: 1.5rem;
   color: #00bfff;
@@ -344,4 +398,3 @@ img {
   }
 }
 
-/*# sourceMappingURL=style.css.map */

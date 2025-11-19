@@ -5,24 +5,40 @@
   <section class="condition-group">
     <strong>제목</strong>
     <input type="text" id="recruitTitle" class="input-box" placeholder="제목을 입력하세요"/>
+    <div class="error-message" data-error="recruitTitle"></div>
   </section>
 
   <!-- 일정 + 주소 -->
   <section class="condition-group">
     <strong>여행 일정 및 관광지</strong>
     <div class="summary-card">
+
+      <!-- 날짜 줄 -->
       <div class="summary-row">
         <span class="icon">📅</span>
-        <input type="date" id="startDate" class="input-date"/>
-        <span>~</span>
-        <input type="date" id="endDate" class="input-date"/>
+
+        <div class="date-group">
+          <div class="date-wrapper">
+            <input type="date" id="startDate" class="input-date"/>
+            <div class="error-message" data-error="startDate"></div>
+          </div>
+
+          <span class="tilde">~</span>
+
+          <div class="date-wrapper">
+            <input type="date" id="endDate" class="input-date"/>
+            <div class="error-message" data-error="endDate"></div>
+          </div>
+        </div>
       </div>
 
+      <!-- 주소 입력 -->
       <div class="summary-row">
         <span class="icon">📍</span>
         <input type="text" id="map-address-display" class="input-box"
                placeholder="지도에서 마커 클릭하면 자동입력" disabled/>
       </div>
+
     </div>
   </section>
 
@@ -34,6 +50,7 @@
   <section class="condition-group">
     <strong>내용</strong>
     <textarea id="recruitContent" class="input-textarea" placeholder="내용을 입력하세요"></textarea>
+    <div class="error-message" data-error="recruitContent"></div>
   </section>
 
   <!-- 유형 -->
